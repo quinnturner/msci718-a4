@@ -1,0 +1,65 @@
+---
+title: "Assignment3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+
+#set up datasets
+redWineData <- read.csv("winequality-red.csv", header=T, sep = ";")
+redWineData$color <- 1
+whiteWineData <- read.csv("winequality-white.csv", header=T, sep = ";")
+whiteWineData$color <- 0
+head(whiteWineData)
+head(redWineData)
+
+wineData <- rbind(whiteWineData, redWineData)
+```
+
+##Exploratory Data Analysis
+```{r}
+#exploratory
+ggplot(wineData, aes(y=quality, x=density)) + geom_point()
+ggplot(wineData, aes(y=quality, x=color)) + geom_point()
+```
+
+##Hypothesis
+
+### 1. What factors impact wine quality?
+```{r}
+wineQuality.model <- lm(quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide
+                    + density + pH + sulphates + alcohol + color, data=wineData)
+summary(wineQuality.model)
+```
+#### Interpretation of Results:
+
+
+### 2. What factors predict wine colour?
+```{r}
+wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide
+                    + density + pH + sulphates + alcohol + quality, data=wineData)
+summary(wineColor.model)
+```
+#### Interpretation of Results:
+
+
+### 3. Which wine is better quality: red or white?
+```{r}
+t.test(redWineData$quality, whiteWineData$quality)
+#dep.t.test <-t.test(redWineData$quality, whiteWineData$quality, paired=TRUE)
+```
+#### Interpretation of Results:
+
+### 4. Logistic
+```{R}
+
+```
+#### Interpretation of Results:
+
+### 5. ANOVA
+```{R}
+
+```
+#### Interpretation of Results:
