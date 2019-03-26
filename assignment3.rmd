@@ -21,16 +21,19 @@ wineData <- rbind(whiteWineData, redWineData)
 ##Exploratory Data Analysis
 ```{r}
 #exploratory
-ggplot(wineData, aes(y=quality, x=density)) + geom_point()
-ggplot(wineData, aes(y=quality, x=color)) + geom_point()
+ggplot(wineData, aes(y=quality, x=density)) + geom_point() + geom_jitter(width=0.25)
+ggplot(wineData, aes(y=quality, x=color)) + geom_point() + geom_jitter(width=0.25)
+
+# Check variable dependence
+
+
 ```
 
 ##Hypothesis
 
 ### 1. What factors impact wine quality?
 ```{r}
-wineQuality.model <- lm(quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide
-                    + density + pH + sulphates + alcohol + color, data=wineData)
+wineQuality.model <- lm(quality ~ ., data=wineData)
 summary(wineQuality.model)
 ```
 #### Interpretation of Results:
@@ -38,8 +41,7 @@ summary(wineQuality.model)
 
 ### 2. What factors predict wine colour?
 ```{r}
-wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide
-                    + density + pH + sulphates + alcohol + quality, data=wineData)
+wineColor.model <- lm(color ~ ., data=wineData)
 summary(wineColor.model)
 ```
 #### Interpretation of Results:
@@ -47,6 +49,8 @@ summary(wineColor.model)
 
 ### 3. Which wine is better quality: red or white?
 ```{r}
+qqPlot(redWineData$quality)
+
 t.test(redWineData$quality, whiteWineData$quality)
 #dep.t.test <-t.test(redWineData$quality, whiteWineData$quality, paired=TRUE)
 ```
