@@ -15,6 +15,8 @@ whiteWineData$color <- 0
 head(whiteWineData)
 head(redWineData)
 
+str(wineData)
+
 wineData <- rbind(whiteWineData, redWineData)
 ```
 
@@ -26,34 +28,93 @@ ggplot(wineData, aes(y=quality, x=color)) + geom_point() + geom_jitter(width=0.2
 
 # Check variable dependence
 
+ggplot(wineData, aes(fixed.acidity)) + geom_histogram()
+qqplot.fixed.acidity <- ggplot(wineData, aes(sample=fixed.acidity)) + stat_qq() + geom_qq_line()
+qqplot.fixed.acidity
+stat.desc(redWineData$fixed.acidity, basic=F, norm=T) #red 
+shapiro.test(redWineData$fixed.acidity) #red ##for large samples, results can be significant, even if the distribution is normal
 
+ggplot(wineData, aes(quality)) + geom_histogram()
+qqplot.quality <- ggplot(wineData, aes(sample=quality)) + stat_qq() + geom_qq_line()
+qqplot.quality
+
+
+
+library(car)
+leveneTest(wineData$fixed.acidity, wineData$quality)
+##we might be supposed to reshape the data, but I'm not sure what we need
+
+##transform data that doesn't meet assumptions?
+
+cor(wineData, method="kendall") ##check method based on assumptions
 ```
+##Assumptions for Linear Regression
+1.all predictor variables must be quantitative or categorical, and outcome must be quantitative, continuous, and unbounded (Y)
+2.non-zero variance (Y)
+3.no perfect multicollinearity (predictor variables should not correlate highly) 
+4.predictors are uncorrelated with external variables (Y - we have to assume)
+5.residuals are homoscedastic (constant variance), independent (test with Durbin-Watson), Normal 
+6.linearity (outcome variable means lie on straight line)
+
+##Assumptions for Logistic Regression
+1.linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1) 
+2.independence of errors: same as linear regression 
+3.multicollinearity: same as linear regression 
+plus, there are some unique problems of its own: 
+1.incomplete information: need full combinations of variables 
+2.complete separation: logistic regression fails if your data does not overlap
+
+
+##cook's distance to quantify influential points - if needed
+
 
 ##Hypothesis
 
 ### 1. What factors impact wine quality?
 ```{r}
-wineQuality.model <- lm(quality ~ ., data=wineData)
+wineQuality.model <- lm(quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pH + sulphates + alcohol + color, data=wineData)
 summary(wineQuality.model)
+
+ggplot(wineData, aes(y=quality, x=fixed.acidity)) + geom_jitter(width=0.1) + facet_grid(~color) ##can use these to separate gender
 ```
 #### Interpretation of Results:
 
 
 ### 2. What factors predict wine colour?
 ```{r}
-wineColor.model <- lm(color ~ ., data=wineData)
+# Note, the parameters provided do not include quality since this is a subjective measure.
+wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pH + sulphates + alcohol, data=wineData)
+summary(wineColor.model)
+
+# Remoed variables with low t-values
+wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + residual.sugar + chlorides + total.sulfur.dioxide + density + alcohol, data=wineData)
 summary(wineColor.model)
 ```
 #### Interpretation of Results:
 
 
 ### 3. Which wine is better quality: red or white?
+
+t-test assumptions
+1.sampling distribution is normally distributed 
+2.data are at least interval
+
+the dependent test also requires:
+3. scores in different treatment conditions are independent (come from different people) 
+4. homogeneity of variance (if you have unequal group sizes)
 ```{r}
-qqPlot(redWineData$quality)
+ggplot(redWineData, aes(quality)) + geom_histogram()
+ggplot(whiteWineData, aes(quality)) + geom_histogram()
 
 t.test(redWineData$quality, whiteWineData$quality)
 #dep.t.test <-t.test(redWineData$quality, whiteWineData$quality, paired=TRUE)
+
+line <- ggplot(wineData, aes(color, quality))
+line + stat_summary(fun.y = mean, geom = "line", size = 1, aes(group=1), colour = "#FF6633") + stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, size = 0.75, colour = "#990000") + stat_summary(fun.y = mean, geom = "point", size = 4, colour = "#990000") + stat_summary(fun.y = mean, geom = "point", size = 3, colour = "#FF6633") + labs(x = "color", y = "Quality")
 ```
+
+The mean quality for red wine and white wine are statistically significant. However, it is not clear that they difference in quality is practically significant the difference between ~5.64 and ~5.87 is not much.
+
 #### Interpretation of Results:
 
 ### 4. Logistic
@@ -63,6 +124,11 @@ t.test(redWineData$quality, whiteWineData$quality)
 #### Interpretation of Results:
 
 ### 5. ANOVA
+assumptions
+1.homogeneity of variance 
+2.observations are independent 
+3.distributions within groups are normally distributed
+in some cases, the assumptions don't need to be met there are subtleties here, but in general, with equal group sizes ANOVA is robust to violations of normality homogeneity details in DSUR 10.3.2
 ```{R}
 
 ```
