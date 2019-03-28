@@ -72,6 +72,8 @@ ggplot(wineData, aes(color)) + geom_histogram(binwidth = 1, color="darkblue", fi
 
 ggplot(wineData, aes(pHTransformed)) + geom_histogram(aes(y=..density..), binwidth = 100, color="darkblue", fill="lightblue") + labs(title = 'Histogram of pH transformed', x = 'pH transformed') + geom_vline(aes(xintercept=mean(pHTransformed)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 ```
+
+##Normally Distributed Variables
 From these graphs, the following variables appear to be normally distributed:
 fixed.acidity
 citric.acid
@@ -80,31 +82,27 @@ sulphates
 quality
 pH
 
-
-
+## Testing for Correlation
 ```{r}
 #check 
 wineDataFactored <- wineData
 wineDataFactored$quality <- factor(wineData$quality, ordered = T)
-leveneTest(wineDataFactored$fixed.acidity, wineDataFactored$quality)
-leveneTest(wineDataFactored$citric.acid, wineDataFactored$quality)
-leveneTest(wineDataFactored$chlorides, wineDataFactored$quality)
-leveneTest(wineDataFactored$sulphates, wineDataFactored$quality)
-leveneTest(wineDataFactored$pH, wineDataFactored$quality)
 
-ggplot(wineData, aes(y=quality, x=density)) + geom_point() + geom_jitter(width=0.25)
-ggplot(wineData, aes(y=quality, x=color)) + geom_point() + geom_jitter(width=0.25)
-
-ggplot(wineData, aes(quality)) + geom_histogram()
-qqplot.quality <- ggplot(wineData, aes(sample=quality)) + stat_qq() + geom_qq_line()
-qqplot.quality
-
+#broken when run pls fix
+#leveneTest(wineDataFactored$fixed.acidity, wineDataFactored$quality)
+#leveneTest(wineDataFactored$citric.acid, wineDataFactored$quality)
+#leveneTest(wineDataFactored$chlorides, wineDataFactored$quality)
+#leveneTest(wineDataFactored$sulphates, wineDataFactored$quality)
+#leveneTest(wineDataFactored$pH, wineDataFactored$quality)
 library(car)
 
-cor(wineData, method="kendall") ##Kendalls' tau can be used when there is non-parametric data and if there are lots of tied ranks
+cor(wineData, method="kendall") 
 ```
+
+
 From Levene's test (of the variables found to be normal above), we find that citric.acid, chlorides, sulphates and pH are homoscedastic amongst varying levels of quality, whereas we cannot conclude the same for fixed.acidity.
 
+## Hypotheses
 
 ### 1. What factors impact wine quality? Hypothesis: Low acidity and sugar content are major indicators of wine quality.
 
@@ -124,14 +122,12 @@ wineQuality.model <- lm(quality ~ fixed.acidity + volatile.acidity + citric.acid
 summary(wineQuality.model)
 ```
 
-Glancing at the values received from the estimate, density has the largest negative correlation with quality (-83), with acidity following after (-1.5). Each have a p-value of less than 0.05.
-
 ```{r}
 ggplot(wineData, aes(y=quality, x=density)) + geom_jitter(width=0.1) + facet_grid(~color)
 ```
 
 #### Interpretation of Results:
-One can gather, when separating by colour especially, that density is a weak indicator of quality of wine.
+Glancing at the values received from the estimate, density has the largest negative correlation with quality (-83), with acidity following after (-1.5). Each have a p-value of less than 0.05. One can gather, when separating by colour especially, that density is a weak indicator of quality of wine especially since the R squared value obtained is insufficient.
 
 
 ### 2. What factors predict wine colour? Hypothesis: Acidity is a strong predictor of wine colour (i.e. red vs. white)
@@ -147,6 +143,7 @@ wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + residual.sugar 
 summary(wineColor.model)
 ```
 #### Interpretation of Results:
+Density has the largest positive correlation with wine colour (co-efficient = 13.47), with chlorides following after (co-efficient = 0.76). Each have a p-value of less than 0.05. Contradictory to our hypothesis, fixed and volatile acidity were not strong predictors of wine colour.
 
 ####Logistic Regression
 #####Assumptions for Logistic Regression
