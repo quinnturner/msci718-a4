@@ -4,7 +4,8 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_chunk$set(echo = TRUE)
+#install.packages("car")
 library(ggplot2)
 library(pastecs)
 
@@ -32,9 +33,8 @@ str(wineData)
 
 # Per-variable histogram
 
-for (col in colnames(wineData)) {
-  ggplot(wineData, aes(col)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = paste('Histogram of ', col), x = col) + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
-}
+#for (col in colnames(wineData)) {
+#  ggplot(wineData, aes(col)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = paste('Histogram of ', col), x = col) + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666") }
 
 
 ggplot(wineData, aes(y=quality, x=density)) + geom_point() + geom_jitter(width=0.25)
@@ -85,13 +85,21 @@ plus, there are some unique problems of its own:
 ##Hypothesis
 
 ### 1. What factors impact wine quality?
+First, we perform linear regression off twelve variables to predict the outcome variable: quality. By running the lm command, we receive co-efficient estimates, standard error, t-value and p-values. 
+
 ```{r}
 wineQuality.model <- lm(quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol + color, data=wineData)
 summary(wineQuality.model)
-
-ggplot(wineData, aes(y=quality, x=fixed.acidity)) + geom_jitter(width=0.1) + facet_grid(~color) ##can use these to separate gender
 ```
+
+Glancing at the values received from the estimate, density has the largest negative correlation with quality (-83), with acidity following after (-1.5). Each have a p-value of less than 0.05.
+
+```{r}
+ggplot(wineData, aes(y=quality, x=density)) + geom_jitter(width=0.1) + facet_grid(~color)
+```
+
 #### Interpretation of Results:
+One can gather, when separating by colour especially, that density is a weak indicator of quality of wine.
 
 
 ### 2. What factors predict wine colour?
