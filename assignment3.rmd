@@ -25,13 +25,13 @@ wineData <- rbind(whiteWineData, redWineData)
 
 str(wineData)
 ```
-  
+
 ###Team Members
 * Quinn Turner // sqturner // 20576575 - Exploratory Data & ANOVA
 * Rebecca Rayner // rsrayner // 20562488 - Linear Regression & Two Means
 * Yusuf Khaled // yhbkhale // 20508841 - Logistic Regression
 * Samantha Villaluz // skvillal // 20582656 - Linear Regression & Two Means
-  
+
 ###Assignment Breakdown
 1. Exploratory Data Analysis
     + Normally Distributed Variables
@@ -42,7 +42,7 @@ str(wineData)
     + Hypothesis #3: Red wine is of higher quality (Comparison of two means)
     +Hypothesis #4: (ANOVA)
 
-  
+
 ##Exploratory Data Analysis
 ```{r}
 # Per-variable histogram
@@ -73,7 +73,7 @@ ggplot(wineData, aes(color)) + geom_histogram(binwidth = 1, color="darkblue", fi
 
 ggplot(wineData, aes(pHTransformed)) + geom_histogram(aes(y=..density..), binwidth = 100, color="darkblue", fill="lightblue") + labs(title = 'Histogram of pH transformed', x = 'pH transformed') + geom_vline(aes(xintercept=mean(pHTransformed)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 ```
-  
+
 ##Normally Distributed Variables
 From these graphs, the following variables appear to be normally distributed:
 * fixed.acidity
@@ -87,12 +87,12 @@ From these graphs, the following variables appear to be normally distributed:
 The following were not normally distributed
 * residual sugar (positive skew)
 * total sulphur dioxide (bimodal)
-* alcohol 
+* alcohol
 
 
 ## Testing for Correlation
 ```{r}
-#check 
+#check
 wineDataFactored <- wineData
 wineDataFactored$quality <- factor(wineData$quality, ordered = T)
 
@@ -104,7 +104,7 @@ wineDataFactored$quality <- factor(wineData$quality, ordered = T)
 #leveneTest(wineDataFactored$pH, wineDataFactored$quality)
 library(car)
 
-cor(wineData, method="kendall") 
+cor(wineData, method="kendall")
 ```
 
 
@@ -122,7 +122,7 @@ From Levene's test (of the variables found to be normal above), we find that cit
 4. Predictors are uncorrelated with external variables (Y - we have to assume)
 5. Residuals are homoscedastic (constant variance), independent (test with Durbin-Watson), Normal
 6. Linearity (outcome variable means lie on straight line)
-  
+
 First, we perform linear regression off twelve variables to predict the outcome variable: quality. By running the lm command, we receive co-efficient estimates, standard error, t-value and p-values.
 
 ```{r}
@@ -139,9 +139,9 @@ Glancing at the values received from the estimate, density has the largest negat
 
 
 ### 2. What factors predict wine colour? Hypothesis: Acidity is a strong predictor of wine colour (i.e. red vs. white)
-  
+
 #### 2.1 Linear Regression
-  
+
 ```{r}
 # Note, the parameters provided do not include quality since this is a subjective measure.
 wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol, data=wineData)
@@ -151,11 +151,54 @@ summary(wineColor.model)
 wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + residual.sugar + chlorides + total.sulfur.dioxide + density + alcohol, data=wineData)
 summary(wineColor.model)
 ```
+
 #### Interpretation of Results:
 Density has the largest positive correlation with wine colour (co-efficient = 13.47), with chlorides following after (co-efficient = 0.76). Each have a p-value of less than 0.05. Contradictory to our hypothesis, fixed and volatile acidity were not strong predictors of wine colour.
-  
+
 #### 2.2 Logistic Regression
-  
+```{r}
+#Lets use Logistic Regression to try and predict wine colour!
+
+# We'll want to use some train-test split on the data to validate our logistic regression model.
+wineDataShuffled <- wineData[sample(nrow(wineData)),]
+wineLength <- nrow(wineDataShuffled)  # 6497
+wineLengthEightyP <- as.integer(nrow(wineDataShuffled)*0.8)  # 5197
+#create train and test set; 60%-40% split
+train = wineDataShuffled[1:5197,]
+test = wineDataShuffled[5198:6497,]
+
+# Lets check out a bunch of feature variables
+glm.fit1 = glm(color ~ pHTransformed + volatile.acidity + chlorides + total.sulfur.dioxide, data = train, family = binomial)
+summary(glm.fit1)
+
+# Interestingly, all of these variables are shown to be significant, as their p-values are close to 0
+# This is a good sign that our model could be a good predictor.
+glm.probability = predict(glm.fit1, newdata = train, type = "response")
+# Use these probabilities to predict red vs wine
+glm.predict = ifelse(glm.probability > 0.5, "white", "red")
+# Lets use a confusion matrix to see how the logistic regression model performed
+trainOutcomeValues = cbind(train$color)
+trainOutcomeValues = ifelse(trainOutcomeValues == 1, "red", "white")
+# Lets see our confusion matrix and accuracy values
+confMat <- table(glm.predict, trainOutcomeValues)
+# Accuracy:
+mean(glm.predict == trainOutcomeValues)
+
+# Now let's compare this to our test data
+glm.probability = predict(glm.fit1, newdata = test, type = "response")
+# Use these probabilities to predict red vs wine
+glm.predict = ifelse(glm.probability > 0.5, "white", "red")
+# Lets use a confusion matrix to see how the logistic regression model performed
+testOutcomeValues = cbind(test$color)
+testOutcomeValues = ifelse(testOutcomeValues == 1, "red", "white")
+# Lets see our confusion matrix and accuracy values
+confMat <- table(glm.predict, testOutcomeValues)
+# Accuracy:
+mean(glm.predict == testOutcomeValues)
+
+```
+```
+
 #####Assumptions for Logistic Regression
 1. Linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1)
 2. Independence of errors: same as linear regression
@@ -166,13 +209,13 @@ plus, there are some unique problems of its own:
 
 
 ### 3. Which wine is better quality: red or white? Hypothesis: Red wine is of higher quality.
-  
+
 ##### t-test Assumptions
-1. Sampling distribution is normally distributed 
+1. Sampling distribution is normally distributed
 --> based on visual inspection, quality appears to be relatively normally distributed
-Can't use stat_desc because there are too many datapoints 
+Can't use stat_desc because there are too many datapoints
 2. Data are at least interval (Yes, when not-factored)
-  
+
 ```{r}
 ggplot(wineData, aes(quality)) + geom_histogram()
 
@@ -183,15 +226,25 @@ line + stat_summary(fun.y = mean, geom = "line", size = 1, aes(group=1), colour 
 ```
 
 #### Interpretation of Results:
-There is no overlap in these two intervals so mean quality for red wine and white wine are statistically significant. The p-value is less than 0.05 and the 95% confidence interval does not contain 0. However, it is not clear that they difference in quality is practically significant the difference between ~5.64 (red) and ~5.87 (white) is not much.
-  
-### 4. Logistic
+
+### Assumptions for Logistic Regression
+1.linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1)
+2.independence of errors: same as linear regression
+3.multicollinearity: same as linear regression
+plus, there are some unique problems of its own:
+1.incomplete information: need full combinations of variables
+2.complete separation: logistic regression fails if your data does not overlap
+
+
+### 4. Which factors are the biggest predictor of pH?
 ```{R}
 
+
+
 ```
-  
+
 #### Interpretation of Results:
-  
+
 ### 5. ANOVA
 assumptions
 1.homogeneity of variance
