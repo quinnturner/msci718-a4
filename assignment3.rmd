@@ -23,6 +23,7 @@ head(whiteWineData)
 head(redWineData)
 
 wineData <- rbind(whiteWineData, redWineData)
+
 str(wineData)
 ```
 
@@ -32,9 +33,9 @@ str(wineData)
 
 # Per-variable histogram
 
-for (col in colnames(wineData)) {
-  ggplot(wineData, aes(col)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = paste('Histogram of ', col), x = col) + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
-}
+# for (col in colnames(wineData)) {
+#   ggplot(wineData, aes(col)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = paste('Histogram of ', col), x = col) + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
+# }
 
 
 ggplot(wineData, aes(y=quality, x=density)) + geom_point() + geom_jitter(width=0.25)
@@ -47,7 +48,6 @@ qqplot.fixed.acidity <- ggplot(wineData, aes(sample=fixed.acidity)) + stat_qq() 
 qqplot.fixed.acidity
 stat.desc(redWineData$fixed.acidity, basic=F, norm=T) #red 
 shapiro.test(redWineData$fixed.acidity) #red ##for large samples, results can be significant, even if the distribution is normal
-
 ggplot(wineData, aes(quality)) + geom_histogram()
 qqplot.quality <- ggplot(wineData, aes(sample=quality)) + stat_qq() + geom_qq_line()
 qqplot.quality
@@ -55,10 +55,9 @@ qqplot.quality
 
 
 library(car)
-leveneTest(wineData$fixed.acidity, wineData$quality)
-##we might be supposed to reshape the data, but I'm not sure what we need
-
-##transform data that doesn't meet assumptions?
+wineDataFactored <- wineData
+wineDataFactored$quality <- factor(wineData$quality, ordered = T)
+leveneTest(wineDataFactored$fixed.acidity, wineDataFactored$quality)
 
 cor(wineData, method="kendall") ##check method based on assumptions
 ```
