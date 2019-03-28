@@ -2,9 +2,9 @@
 title: "Assignment3"
 output: html_document
 ---
-
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_chunk$set(echo = TRUE)
+#install.packages("car")
 library(ggplot2)
 library(pastecs)
 
@@ -18,83 +18,130 @@ whiteWineData$color <- 0
 whiteWineData$pHTransformed <- 10^whiteWineData$pH
 whiteWineData$pH <- NULL
 
-
 head(whiteWineData)
 head(redWineData)
 
 wineData <- rbind(whiteWineData, redWineData)
+
 str(wineData)
 ```
 
+###Team Members
+* Quinn Turner // sqturner // 20576575 - Exploratory Data & ANOVA
+* Rebecca Rayner // rsrayner // 20562488 - Linear Regression & Two Means
+* Yusuf Khaled // yhbkhale // 20508841 - Logistic Regression
+* Samantha Villaluz // skvillal // 20582656 - Linear Regression & Two Means
+
+###Assignment Breakdown
+1. Exploratory Data Analysis
+    + Normally Distributed Variables
+    + Correlation using Levene's Test
+2. Hypothesis
+    + Hypothesis #1: Low acidity and sugar content are major indicators of wine quality (Linear regression)
+    + Hypothesis #2: Acidity is a strong predictor of wine colour (Logistic & linear regression)
+    + Hypothesis #3: Red wine is of higher quality (Comparison of two means)
+    +Hypothesis #4: (ANOVA)
+
+
 ##Exploratory Data Analysis
 ```{r}
-#exploratory
-
 # Per-variable histogram
 
-for (col in colnames(wineData)) {
-  ggplot(wineData, aes(col)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = paste('Histogram of ', col), x = col) + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
-}
+ggplot(wineData, aes(fixed.acidity)) + geom_histogram(aes(y=..density..), binwidth = .1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of fixed acidity', x = 'Fixed acidity') + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
+ggplot(wineData, aes(volatile.acidity)) + geom_histogram(aes(y=..density..), binwidth = .1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of volatile acidity', x = 'Volatile acidity') + geom_vline(aes(xintercept=mean(volatile.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
-ggplot(wineData, aes(y=quality, x=density)) + geom_point() + geom_jitter(width=0.25)
-ggplot(wineData, aes(y=quality, x=color)) + geom_point() + geom_jitter(width=0.25)
+ggplot(wineData, aes(citric.acid)) + geom_histogram(aes(y=..density..), binwidth = .1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of citric acid', x = 'Citric acid') + geom_vline(aes(xintercept=mean(citric.acid)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
-# Check variable dependence
+ggplot(wineData, aes(residual.sugar)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of residual sugar', x = 'Residual sugar') + geom_vline(aes(xintercept=mean(residual.sugar)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
-ggplot(wineData, aes(fixed.acidity)) + geom_histogram()
-qqplot.fixed.acidity <- ggplot(wineData, aes(sample=fixed.acidity)) + stat_qq() + geom_qq_line()
-qqplot.fixed.acidity
-stat.desc(redWineData$fixed.acidity, basic=F, norm=T) #red 
-shapiro.test(redWineData$fixed.acidity) #red ##for large samples, results can be significant, even if the distribution is normal
+ggplot(wineData, aes(chlorides)) + geom_histogram(aes(y=..density..), binwidth = .01, color="darkblue", fill="lightblue") + labs(title = 'Histogram of chlorides', x = 'Chlorides') + geom_vline(aes(xintercept=mean(chlorides)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
-ggplot(wineData, aes(quality)) + geom_histogram()
-qqplot.quality <- ggplot(wineData, aes(sample=quality)) + stat_qq() + geom_qq_line()
-qqplot.quality
+ggplot(wineData, aes(free.sulfur.dioxide)) + geom_histogram(aes(y=..density..), binwidth = 5, color="darkblue", fill="lightblue") + labs(title = 'Histogram of free sulfur dioxide', x = 'Free sulfur dioxide') + geom_vline(aes(xintercept=mean(free.sulfur.dioxide)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
+ggplot(wineData, aes(total.sulfur.dioxide)) + geom_histogram(aes(y=..density..), binwidth = 5, color="darkblue", fill="lightblue") + labs(title = 'Histogram of total sulfur dioxide', x = 'Total sulfur dioxide') + geom_vline(aes(xintercept=mean(total.sulfur.dioxide)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
+ggplot(wineData, aes(density)) + geom_histogram(aes(y=..density..), binwidth = .001, color="darkblue", fill="lightblue") + labs(title = 'Histogram of density', x = 'Density') + geom_vline(aes(xintercept=mean(density)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
-library(car)
-leveneTest(wineData$fixed.acidity, wineData$quality)
-##we might be supposed to reshape the data, but I'm not sure what we need
+ggplot(wineData, aes(sulphates)) + geom_histogram(aes(y=..density..), binwidth = .1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of sulphates', x = 'Sulphates') + geom_vline(aes(xintercept=mean(sulphates)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
-##transform data that doesn't meet assumptions?
+ggplot(wineData, aes(alcohol)) + geom_histogram(aes(y=..density..), binwidth = .5, color="darkblue", fill="lightblue") + labs(title = 'Histogram of alcohol', x = 'Alcohol') + geom_vline(aes(xintercept=mean(alcohol)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
-cor(wineData, method="kendall") ##check method based on assumptions
+ggplot(wineData, aes(quality)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of quality', x = 'Quality') + geom_vline(aes(xintercept=mean(quality)), color="red", linetype="dashed", size=1)
+
+ggplot(wineData, aes(color)) + geom_histogram(binwidth = 1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of color', x = 'Color') + geom_vline(aes(xintercept=mean(color)), color="red", linetype="dashed", size=1)
+
+ggplot(wineData, aes(pHTransformed)) + geom_histogram(aes(y=..density..), binwidth = 100, color="darkblue", fill="lightblue") + labs(title = 'Histogram of pH transformed', x = 'pH transformed') + geom_vline(aes(xintercept=mean(pHTransformed)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 ```
-##Assumptions for Linear Regression
-1.all predictor variables must be quantitative or categorical, and outcome must be quantitative, continuous, and unbounded (Y)
-2.non-zero variance (Y)
-3.no perfect multicollinearity (predictor variables should not correlate highly) 
-4.predictors are uncorrelated with external variables (Y - we have to assume)
-5.residuals are homoscedastic (constant variance), independent (test with Durbin-Watson), Normal 
-6.linearity (outcome variable means lie on straight line)
 
-##Assumptions for Logistic Regression
-1.linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1) 
-2.independence of errors: same as linear regression 
-3.multicollinearity: same as linear regression 
-plus, there are some unique problems of its own: 
-1.incomplete information: need full combinations of variables 
-2.complete separation: logistic regression fails if your data does not overlap
+##Normally Distributed Variables
+From these graphs, the following variables appear to be normally distributed:
+* fixed.acidity
+* citric.acid
+* chlorides (semi bimodal)
+* sulphates
+* quality
+* pH (transformed)
+* density
 
-
-##cook's distance to quantify influential points - if needed
+The following were not normally distributed
+* residual sugar (positive skew)
+* total sulphur dioxide (bimodal)
+* alcohol
 
 
-##Hypothesis
+## Testing for Correlation
+```{r}
+#check
+wineDataFactored <- wineData
+wineDataFactored$quality <- factor(wineData$quality, ordered = T)
 
-### 1. What factors impact wine quality?
+#broken when run pls fix
+#leveneTest(wineDataFactored$fixed.acidity, wineDataFactored$quality)
+#leveneTest(wineDataFactored$citric.acid, wineDataFactored$quality)
+#leveneTest(wineDataFactored$chlorides, wineDataFactored$quality)
+#leveneTest(wineDataFactored$sulphates, wineDataFactored$quality)
+#leveneTest(wineDataFactored$pH, wineDataFactored$quality)
+library(car)
+
+cor(wineData, method="kendall")
+```
+
+
+From Levene's test (of the variables found to be normal above), we find that citric.acid, chlorides, sulphates and pH are homoscedastic amongst varying levels of quality, whereas we cannot conclude the same for fixed.acidity.
+
+## Hypotheses
+
+### 1. What factors impact wine quality? Hypothesis: Low acidity and sugar content are major indicators of wine quality.
+
+#### 1.1 Linear Regression
+#####Assumptions for Linear Regression
+1. All predictor variables must be quantitative or categorical, and outcome must be quantitative, continuous, and unbounded (Y)
+2. Non-zero variance (Y)
+3. No perfect multicollinearity (predictor variables should not correlate highly)
+4. Predictors are uncorrelated with external variables (Y - we have to assume)
+5. Residuals are homoscedastic (constant variance), independent (test with Durbin-Watson), Normal
+6. Linearity (outcome variable means lie on straight line)
+
+First, we perform linear regression off twelve variables to predict the outcome variable: quality. By running the lm command, we receive co-efficient estimates, standard error, t-value and p-values.
+
 ```{r}
 wineQuality.model <- lm(quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol + color, data=wineData)
 summary(wineQuality.model)
-
-ggplot(wineData, aes(y=quality, x=fixed.acidity)) + geom_jitter(width=0.1) + facet_grid(~color) ##can use these to separate gender
 ```
+
+```{r}
+ggplot(wineData, aes(y=quality, x=density)) + geom_jitter(width=0.1) + facet_grid(~color)
+```
+
 #### Interpretation of Results:
+Glancing at the values received from the estimate, density has the largest negative correlation with quality (-83), with acidity following after (-1.5). Each have a p-value of less than 0.05. One can gather, when separating by colour especially, that density is a weak indicator of quality of wine especially since the R squared value obtained is insufficient.
 
 
-### 2. What factors predict wine colour?
+### 2. What factors predict wine colour? Hypothesis: Acidity is a strong predictor of wine colour (i.e. red vs. white)
+
+#### 2.1 Linear Regression
+
 ```{r}
 # Note, the parameters provided do not include quality since this is a subjective measure.
 wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol, data=wineData)
@@ -145,38 +192,44 @@ mean(glm.predict == testOutcomeValues)
 
 ```
 #### Interpretation of Results:
+Density has the largest positive correlation with wine colour (co-efficient = 13.47), with chlorides following after (co-efficient = 0.76). Each have a p-value of less than 0.05. Contradictory to our hypothesis, fixed and volatile acidity were not strong predictors of wine colour.
+
+#### 2.2 Logistic Regression
+
+#####Assumptions for Logistic Regression
+1. Linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1)
+2. Independence of errors: same as linear regression
+3. Multicollinearity: same as linear regression
+plus, there are some unique problems of its own:
+1. Incomplete information: need full combinations of variables
+2. Complete separation: logistic regression fails if your data does not overlap
 
 
-### 3. Which wine is better quality: red or white?
+### 3. Which wine is better quality: red or white? Hypothesis: Red wine is of higher quality.
 
-t-test assumptions
-1.sampling distribution is normally distributed 
-2.data are at least interval
+##### t-test Assumptions
+1. Sampling distribution is normally distributed
+--> based on visual inspection, quality appears to be relatively normally distributed
+Can't use stat_desc because there are too many datapoints
+2. Data are at least interval (Yes, when not-factored)
 
-the dependent test also requires:
-3. scores in different treatment conditions are independent (come from different people) 
-4. homogeneity of variance (if you have unequal group sizes)
 ```{r}
-ggplot(redWineData, aes(quality)) + geom_histogram()
-ggplot(whiteWineData, aes(quality)) + geom_histogram()
+ggplot(wineData, aes(quality)) + geom_histogram()
 
 t.test(redWineData$quality, whiteWineData$quality)
-#dep.t.test <-t.test(redWineData$quality, whiteWineData$quality, paired=TRUE)
 
 line <- ggplot(wineData, aes(color, quality))
 line + stat_summary(fun.y = mean, geom = "line", size = 1, aes(group=1), colour = "#FF6633") + stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, size = 0.75, colour = "#990000") + stat_summary(fun.y = mean, geom = "point", size = 4, colour = "#990000") + stat_summary(fun.y = mean, geom = "point", size = 3, colour = "#FF6633") + labs(x = "color", y = "Quality")
 ```
 
-The mean quality for red wine and white wine are statistically significant. However, it is not clear that they difference in quality is practically significant the difference between ~5.64 and ~5.87 is not much.
-
 #### Interpretation of Results:
 
 ### Assumptions for Logistic Regression
-1.linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1) 
-2.independence of errors: same as linear regression 
-3.multicollinearity: same as linear regression 
-plus, there are some unique problems of its own: 
-1.incomplete information: need full combinations of variables 
+1.linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1)
+2.independence of errors: same as linear regression
+3.multicollinearity: same as linear regression
+plus, there are some unique problems of its own:
+1.incomplete information: need full combinations of variables
 2.complete separation: logistic regression fails if your data does not overlap
 
 
@@ -186,12 +239,13 @@ plus, there are some unique problems of its own:
 
 
 ```
+
 #### Interpretation of Results:
 
 ### 5. ANOVA
 assumptions
-1.homogeneity of variance 
-2.observations are independent 
+1.homogeneity of variance
+2.observations are independent
 3.distributions within groups are normally distributed
 in some cases, the assumptions don't need to be met there are subtleties here, but in general, with equal group sizes ANOVA is robust to violations of normality homogeneity details in DSUR 10.3.2
 ```{R}
