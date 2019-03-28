@@ -4,7 +4,8 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_chunk$set(echo = TRUE)
+#install.packages("car")
 library(ggplot2)
 library(pastecs)
 
@@ -25,6 +26,21 @@ wineData <- rbind(whiteWineData, redWineData)
 
 str(wineData)
 ```
+
+###Team Members
+* Quinn Turner // sqturner // 20576575 - Exploratory Data & ANOVA
+* Rebecca Rayner // rsrayner // 20562488 - Linear Regression & Two Means
+* Yusuf Khaled // yhbkhale // 20508841 - Logistic Regression
+* Samantha Villaluz // skvillal // 20582656 - Linear Regression & Two Means
+
+###Assignment Breakdown
+1. Exploratory Data Analysis
+2. Hypothesis
+    + Hypothesis #1: Low acidity and sugar content are major indicators of wine quality (Linear regression)
+    + Hypothesis #2: Acidity is a strong predictor of wine colour (Logistic & linear regression)
+    + Hypothesis #3: Red wine is of higher quality (Comparison of two means)
+    +Hypothesis #4: (ANOVA)
+
 
 ##Exploratory Data Analysis
 ```{r}
@@ -84,7 +100,7 @@ ggplot(wineData, aes(y=quality, x=color)) + geom_point() + geom_jitter(width=0.2
 ggplot(wineData, aes(fixed.acidity)) + geom_histogram()
 qqplot.fixed.acidity <- ggplot(wineData, aes(sample=fixed.acidity)) + stat_qq() + geom_qq_line()
 qqplot.fixed.acidity
-stat.desc(redWineData$fixed.acidity, basic=F, norm=T) #red 
+stat.desc(redWineData$fixed.acidity, basic=F, norm=T) #red
 shapiro.test(redWineData$fixed.acidity) #red ##for large samples, results can be significant, even if the distribution is normal
 ggplot(wineData, aes(quality)) + geom_histogram()
 qqplot.quality <- ggplot(wineData, aes(sample=quality)) + stat_qq() + geom_qq_line()
@@ -97,35 +113,37 @@ cor(wineData, method="kendall") ##Kendalls' tau can be used when there is non-pa
 From Levene's test (of the variables found to be normal above), we find that citric.acid, chlorides, sulphates and pH are homoscedastic amongst varying levels of quality, whereas we cannot conclude the same for fixed.acidity.
 
 
-##Assumptions for Linear Regression
-1.all predictor variables must be quantitative or categorical, and outcome must be quantitative, continuous, and unbounded (Y)
-2.non-zero variance (Y)
-3.no perfect multicollinearity (predictor variables should not correlate highly) 
-4.predictors are uncorrelated with external variables (Y - we have to assume)
-5.residuals are homoscedastic (constant variance), independent (test with Durbin-Watson), Normal 
-6.linearity (outcome variable means lie on straight line)
+### 1. What factors impact wine quality? Hypothesis: Low acidity and sugar content are major indicators of wine quality.
 
-##Assumptions for Logistic Regression
-1.linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1) 
-2.independence of errors: same as linear regression 
-3.multicollinearity: same as linear regression 
-plus, there are some unique problems of its own: 
-1.incomplete information: need full combinations of variables 
-2.complete separation: logistic regression fails if your data does not overlap
+####Linear Regression
+#####Assumptions for Linear Regression
+1. All predictor variables must be quantitative or categorical, and outcome must be quantitative, continuous, and unbounded (Y)
+2. Non-zero variance (Y)
+3. No perfect multicollinearity (predictor variables should not correlate highly)
+4. Predictors are uncorrelated with external variables (Y - we have to assume)
+5. Residuals are homoscedastic (constant variance), independent (test with Durbin-Watson), Normal
+6. Linearity (outcome variable means lie on straight line)
 
-##Hypothesis
+First, we perform linear regression off twelve variables to predict the outcome variable: quality. By running the lm command, we receive co-efficient estimates, standard error, t-value and p-values.
 
-### 1. What factors impact wine quality?
 ```{r}
 wineQuality.model <- lm(quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol + color, data=wineData)
 summary(wineQuality.model)
-
-ggplot(wineData, aes(y=quality, x=fixed.acidity)) + geom_jitter(width=0.1) + facet_grid(~color) ##can use these to separate gender
 ```
+
+Glancing at the values received from the estimate, density has the largest negative correlation with quality (-83), with acidity following after (-1.5). Each have a p-value of less than 0.05.
+
+```{r}
+ggplot(wineData, aes(y=quality, x=density)) + geom_jitter(width=0.1) + facet_grid(~color)
+```
+
 #### Interpretation of Results:
+One can gather, when separating by colour especially, that density is a weak indicator of quality of wine.
 
 
-### 2. What factors predict wine colour?
+### 2. What factors predict wine colour? Hypothesis: Acidity is a strong predictor of wine colour (i.e. red vs. white)
+
+####Linear Regression
 ```{r}
 # Note, the parameters provided do not include quality since this is a subjective measure.
 wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol, data=wineData)
@@ -137,8 +155,17 @@ summary(wineColor.model)
 ```
 #### Interpretation of Results:
 
+####Logistic Regression
+#####Assumptions for Logistic Regression
+1. Linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1)
+2. Independence of errors: same as linear regression
+3. Multicollinearity: same as linear regression
+plus, there are some unique problems of its own:
+1. Incomplete information: need full combinations of variables
+2. Complete separation: logistic regression fails if your data does not overlap
 
-### 3. Which wine is better quality: red or white?
+
+### 3. Which wine is better quality: red or white? Hypothesis: Red wine is of higher quality.
 
 t-test assumptions
 1.sampling distribution is normally distributed 
@@ -166,8 +193,8 @@ There is no overlap in these two intervals so mean quality for red wine and whit
 
 ### 5. ANOVA
 assumptions
-1.homogeneity of variance 
-2.observations are independent 
+1.homogeneity of variance
+2.observations are independent
 3.distributions within groups are normally distributed
 in some cases, the assumptions don't need to be met there are subtleties here, but in general, with equal group sizes ANOVA is robust to violations of normality homogeneity details in DSUR 10.3.2
 ```{R}
