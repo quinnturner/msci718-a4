@@ -173,31 +173,33 @@ summary(glm.fit1)
 
 # Interestingly, all of these variables are shown to be significant, as their p-values are close to 0
 # This is a good sign that our model could be a good predictor.
-glm.probability = predict(glm.fit1, newdata = train, type = "response")
+glmProbTrain = predict(glm.fit1, newdata = train, type = "response")
 # Use these probabilities to predict red vs wine
-glm.predict = ifelse(glm.probability > 0.5, "white", "red")
+glmPredictTrain = ifelse(glmProbTrain > 0.5, "red", "white")
 # Lets use a confusion matrix to see how the logistic regression model performed
 trainOutcomeValues = cbind(train$color)
 trainOutcomeValues = ifelse(trainOutcomeValues == 1, "red", "white")
 # Lets see our confusion matrix and accuracy values
-confMat <- table(glm.predict, trainOutcomeValues)
+confMatTrain <- table(glmPredictTrain, trainOutcomeValues)
 # Accuracy:
-mean(glm.predict == trainOutcomeValues)
+mean(glmPredictTrain == trainOutcomeValues)
 
 # Now let's compare this to our test data
-glm.probability = predict(glm.fit1, newdata = test, type = "response")
+glmProbTest = predict(glm.fit1, newdata = test, type = "response")
 # Use these probabilities to predict red vs wine
-glm.predict = ifelse(glm.probability > 0.5, "white", "red")
+glmPredictTest = ifelse(glmProbTest > 0.5, "red", "white")
 # Lets use a confusion matrix to see how the logistic regression model performed
 testOutcomeValues = cbind(test$color)
 testOutcomeValues = ifelse(testOutcomeValues == 1, "red", "white")
 # Lets see our confusion matrix and accuracy values
-confMat <- table(glm.predict, testOutcomeValues)
+confMat <- table(glmPredictTest, testOutcomeValues)
 # Accuracy:
-mean(glm.predict == testOutcomeValues)
+mean(glmPredictTest == testOutcomeValues)
 
 ```
 ```
+#### Interpretation of Results:
+As we can see, the logistic regression model produces quite good results: 97.3% accuracy over training data and 97.0% accuracy over the testing data. It is a good sign that the accuracy barely drops between training and testing data, as this ensures the model hasn't overfit to the learned data. Based on the fact that all of the feature variables used in the model (pH, volatile acidity, chlorides, sulfur dioxide) were shown to be significantly related to our predictor variable in the summary of the model's fit, it makes sense that these variables would form a well-performing logistic regression model.
 
 #####Assumptions for Logistic Regression
 1. Linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1)
