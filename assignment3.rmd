@@ -6,23 +6,37 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
+library(pastecs)
 
 #set up datasets
 redWineData <- read.csv("winequality-red.csv", header=T, sep = ";")
 redWineData$color <- 1
+redWineData$pHTransformed <- 10^redWineData$pH
+redWineData$pH <- NULL
 whiteWineData <- read.csv("winequality-white.csv", header=T, sep = ";")
 whiteWineData$color <- 0
+whiteWineData$pHTransformed <- 10^whiteWineData$pH
+whiteWineData$pH <- NULL
+
+
 head(whiteWineData)
 head(redWineData)
 
-str(wineData)
-
 wineData <- rbind(whiteWineData, redWineData)
+str(wineData)
 ```
 
 ##Exploratory Data Analysis
 ```{r}
 #exploratory
+
+# Per-variable histogram
+
+for (col in colnames(wineData)) {
+  ggplot(wineData, aes(col)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = paste('Histogram of ', col), x = col) + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
+}
+
+
 ggplot(wineData, aes(y=quality, x=density)) + geom_point() + geom_jitter(width=0.25)
 ggplot(wineData, aes(y=quality, x=color)) + geom_point() + geom_jitter(width=0.25)
 
@@ -72,7 +86,7 @@ plus, there are some unique problems of its own:
 
 ### 1. What factors impact wine quality?
 ```{r}
-wineQuality.model <- lm(quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pH + sulphates + alcohol + color, data=wineData)
+wineQuality.model <- lm(quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol + color, data=wineData)
 summary(wineQuality.model)
 
 ggplot(wineData, aes(y=quality, x=fixed.acidity)) + geom_jitter(width=0.1) + facet_grid(~color) ##can use these to separate gender
@@ -83,7 +97,7 @@ ggplot(wineData, aes(y=quality, x=fixed.acidity)) + geom_jitter(width=0.1) + fac
 ### 2. What factors predict wine colour?
 ```{r}
 # Note, the parameters provided do not include quality since this is a subjective measure.
-wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pH + sulphates + alcohol, data=wineData)
+wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol, data=wineData)
 summary(wineColor.model)
 
 # Remoed variables with low t-values
