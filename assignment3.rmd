@@ -95,13 +95,6 @@ leveneTest(wineDataFactored$pH, wineDataFactored$quality)
 ggplot(wineData, aes(y=quality, x=density)) + geom_point() + geom_jitter(width=0.25)
 ggplot(wineData, aes(y=quality, x=color)) + geom_point() + geom_jitter(width=0.25)
 
-# Check variable dependence
-
-ggplot(wineData, aes(fixed.acidity)) + geom_histogram()
-qqplot.fixed.acidity <- ggplot(wineData, aes(sample=fixed.acidity)) + stat_qq() + geom_qq_line()
-qqplot.fixed.acidity
-stat.desc(redWineData$fixed.acidity, basic=F, norm=T) #red
-shapiro.test(redWineData$fixed.acidity) #red ##for large samples, results can be significant, even if the distribution is normal
 ggplot(wineData, aes(quality)) + geom_histogram()
 qqplot.quality <- ggplot(wineData, aes(sample=quality)) + stat_qq() + geom_qq_line()
 qqplot.quality
