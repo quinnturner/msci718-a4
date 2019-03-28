@@ -29,15 +29,36 @@ str(wineData)
 
 ##Exploratory Data Analysis
 ```{r}
-#exploratory
-
 # Per-variable histogram
 
-# for (col in colnames(wineData)) {
-#   ggplot(wineData, aes(col)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = paste('Histogram of ', col), x = col) + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
-# }
+ggplot(wineData, aes(fixed.acidity)) + geom_histogram(aes(y=..density..), binwidth = .1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of fixed acidity', x = 'Fixed acidity') + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
+ggplot(wineData, aes(volatile.acidity)) + geom_histogram(aes(y=..density..), binwidth = .1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of volatile acidity', x = 'Volatile acidity') + geom_vline(aes(xintercept=mean(volatile.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
+ggplot(wineData, aes(citric.acid)) + geom_histogram(aes(y=..density..), binwidth = .1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of citric acid', x = 'Citric acid') + geom_vline(aes(xintercept=mean(citric.acid)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
+
+ggplot(wineData, aes(residual.sugar)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of residual sugar', x = 'Residual sugar') + geom_vline(aes(xintercept=mean(residual.sugar)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
+
+ggplot(wineData, aes(chlorides)) + geom_histogram(aes(y=..density..), binwidth = .01, color="darkblue", fill="lightblue") + labs(title = 'Histogram of chlorides', x = 'Chlorides') + geom_vline(aes(xintercept=mean(chlorides)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
+
+ggplot(wineData, aes(free.sulfur.dioxide)) + geom_histogram(aes(y=..density..), binwidth = 5, color="darkblue", fill="lightblue") + labs(title = 'Histogram of free sulfur dioxide', x = 'Free sulfur dioxide') + geom_vline(aes(xintercept=mean(free.sulfur.dioxide)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
+
+ggplot(wineData, aes(total.sulfur.dioxide)) + geom_histogram(aes(y=..density..), binwidth = 5, color="darkblue", fill="lightblue") + labs(title = 'Histogram of total sulfur dioxide', x = 'Total sulfur dioxide') + geom_vline(aes(xintercept=mean(total.sulfur.dioxide)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
+
+ggplot(wineData, aes(density)) + geom_histogram(aes(y=..density..), binwidth = .001, color="darkblue", fill="lightblue") + labs(title = 'Histogram of density', x = 'Density') + geom_vline(aes(xintercept=mean(density)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
+
+ggplot(wineData, aes(sulphates)) + geom_histogram(aes(y=..density..), binwidth = .1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of sulphates', x = 'Sulphates') + geom_vline(aes(xintercept=mean(sulphates)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
+
+ggplot(wineData, aes(alcohol)) + geom_histogram(aes(y=..density..), binwidth = .5, color="darkblue", fill="lightblue") + labs(title = 'Histogram of alcohol', x = 'Alcohol') + geom_vline(aes(xintercept=mean(alcohol)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
+
+ggplot(wineData, aes(quality)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of quality', x = 'Quality') + geom_vline(aes(xintercept=mean(quality)), color="red", linetype="dashed", size=1)
+
+ggplot(wineData, aes(color)) + geom_histogram(binwidth = 1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of color', x = 'Color') + geom_vline(aes(xintercept=mean(color)), color="red", linetype="dashed", size=1)
+
+ggplot(wineData, aes(pHTransformed)) + geom_histogram(aes(y=..density..), binwidth = 100, color="darkblue", fill="lightblue") + labs(title = 'Histogram of pH transformed', x = 'pH transformed') + geom_vline(aes(xintercept=mean(pHTransformed)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
+```
+
+```{r}
 ggplot(wineData, aes(y=quality, x=density)) + geom_point() + geom_jitter(width=0.25)
 ggplot(wineData, aes(y=quality, x=color)) + geom_point() + geom_jitter(width=0.25)
 
