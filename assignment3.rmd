@@ -33,8 +33,9 @@ str(wineData)
 
 # Per-variable histogram
 
-#for (col in colnames(wineData)) {
-#  ggplot(wineData, aes(col)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = paste('Histogram of ', col), x = col) + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666") }
+for (col in colnames(wineData)) {
+  ggplot(wineData, aes(col)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = paste('Histogram of ', col), x = col) + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666") 
+}
 
 
 ggplot(wineData, aes(y=quality, x=density)) + geom_point() + geom_jitter(width=0.25)
