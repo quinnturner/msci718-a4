@@ -18,7 +18,6 @@ whiteWineData$color <- 0
 whiteWineData$pHTransformed <- 10^whiteWineData$pH
 whiteWineData$pH <- NULL
 
-
 head(whiteWineData)
 head(redWineData)
 
@@ -57,8 +56,26 @@ ggplot(wineData, aes(color)) + geom_histogram(binwidth = 1, color="darkblue", fi
 
 ggplot(wineData, aes(pHTransformed)) + geom_histogram(aes(y=..density..), binwidth = 100, color="darkblue", fill="lightblue") + labs(title = 'Histogram of pH transformed', x = 'pH transformed') + geom_vline(aes(xintercept=mean(pHTransformed)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 ```
+From these graphs, the following variables appear to be normally distributed:
+fixed.acidity
+citric.acid
+chlorides
+sulphates
+quality
+pH
+
+
 
 ```{r}
+#check 
+wineDataFactored <- wineData
+wineDataFactored$quality <- factor(wineData$quality, ordered = T)
+leveneTest(wineDataFactored$fixed.acidity, wineDataFactored$quality)
+leveneTest(wineDataFactored$citric.acid, wineDataFactored$quality)
+leveneTest(wineDataFactored$chlorides, wineDataFactored$quality)
+leveneTest(wineDataFactored$sulphates, wineDataFactored$quality)
+leveneTest(wineDataFactored$pH, wineDataFactored$quality)
+
 ggplot(wineData, aes(y=quality, x=density)) + geom_point() + geom_jitter(width=0.25)
 ggplot(wineData, aes(y=quality, x=color)) + geom_point() + geom_jitter(width=0.25)
 
@@ -73,12 +90,13 @@ ggplot(wineData, aes(quality)) + geom_histogram()
 qqplot.quality <- ggplot(wineData, aes(sample=quality)) + stat_qq() + geom_qq_line()
 qqplot.quality
 
-
-
 library(car)
 
-cor(wineData, method="kendall") ##check method based on assumptions
+cor(wineData, method="kendall") ##Kendalls' tau can be used when there is non-parametric data and if there are lots of tied ranks
 ```
+From Levene's test (of the variables found to be normal above), we find that citric.acid, chlorides, sulphates and pH are homoscedastic amongst varying levels of quality, whereas we cannot conclude the same for fixed.acidity.
+
+
 ##Assumptions for Linear Regression
 1.all predictor variables must be quantitative or categorical, and outcome must be quantitative, continuous, and unbounded (Y)
 2.non-zero variance (Y)
@@ -94,10 +112,6 @@ cor(wineData, method="kendall") ##check method based on assumptions
 plus, there are some unique problems of its own: 
 1.incomplete information: need full combinations of variables 
 2.complete separation: logistic regression fails if your data does not overlap
-
-
-##cook's distance to quantify influential points - if needed
-
 
 ##Hypothesis
 
@@ -128,30 +142,21 @@ summary(wineColor.model)
 
 t-test assumptions
 1.sampling distribution is normally distributed 
-2.data are at least interval
+--> based on visual inspection, quality appears to be relatively normally distributed
+Can't use stat_desc because there are too many datapoints 
+2.data are at least interval (Yes, when not-factored)
 
-the dependent test also requires:
-3. scores in different treatment conditions are independent (come from different people) 
-4. homogeneity of variance (if you have unequal group sizes)
 ```{r}
-wineDataFactored <- wineData
-wineDataFactored$quality <- factor(wineData$quality, ordered = T)
-leveneTest(wineDataFactored$fixed.acidity, wineDataFactored$quality)
-
-ggplot(redWineData, aes(quality)) + geom_histogram()
-ggplot(whiteWineData, aes(quality)) + geom_histogram()
 ggplot(wineData, aes(quality)) + geom_histogram()
 
 t.test(redWineData$quality, whiteWineData$quality)
-#dep.t.test <-t.test(redWineData$quality, whiteWineData$quality, paired=TRUE)
 
 line <- ggplot(wineData, aes(color, quality))
 line + stat_summary(fun.y = mean, geom = "line", size = 1, aes(group=1), colour = "#FF6633") + stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, size = 0.75, colour = "#990000") + stat_summary(fun.y = mean, geom = "point", size = 4, colour = "#990000") + stat_summary(fun.y = mean, geom = "point", size = 3, colour = "#FF6633") + labs(x = "color", y = "Quality")
 ```
 
-The mean quality for red wine and white wine are statistically significant. However, it is not clear that they difference in quality is practically significant the difference between ~5.64 and ~5.87 is not much.
-
 #### Interpretation of Results:
+There is no overlap in these two intervals so mean quality for red wine and white wine are statistically significant. The p-value is less than 0.05 and the 95% confidence interval does not contain 0. However, it is not clear that they difference in quality is practically significant the difference between ~5.64 (red) and ~5.87 (white) is not much.
 
 ### 4. Logistic
 ```{R}
