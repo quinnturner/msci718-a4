@@ -103,6 +103,46 @@ summary(wineColor.model)
 # Remoed variables with low t-values
 wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + residual.sugar + chlorides + total.sulfur.dioxide + density + alcohol, data=wineData)
 summary(wineColor.model)
+
+# We'll want to use some train-test split on the data to validate our logistic regression model.
+wineDataShuffled <- wineData[sample(nrow(wineData)),]
+wineLength <- nrow(wineDataShuffled)  # 6497
+wineLengthEightyP <- as.integer(nrow(wineDataShuffled)*0.8)  # 5197
+#create train and test set; 60%-40% split
+train = wineDataShuffled[1:5197,]
+test = wineDataShuffled[5198:6497,]
+
+#Lets use Logistic Regression to try and predict wine colour!
+
+# Lets check out a bunch of feature variables
+glm.fit1 = glm(color ~ pHTransformed + volatile.acidity + chlorides + total.sulfur.dioxide, data = train, family = binomial)
+summary(glm.fit1)
+
+# Interestingly, all of these variables are shown to be significant, as their p-values are close to 0
+# This is a good sign that our model could be a good predictor.
+glm.probability = predict(glm.fit1, newdata = train, type = "response")
+# Use these probabilities to predict red vs wine
+glm.predict = ifelse(glm.probability > 0.5, "white", "red")
+# Lets use a confusion matrix to see how the logistic regression model performed
+trainOutcomeValues = cbind(train$color)
+trainOutcomeValues = ifelse(trainOutcomeValues == 1, "red", "white")
+# Lets see our confusion matrix and accuracy values
+confMat <- table(glm.predict, trainOutcomeValues)
+# Accuracy:
+mean(glm.predict == trainOutcomeValues)
+
+# Now let's compare this to our test data
+glm.probability = predict(glm.fit1, newdata = test, type = "response")
+# Use these probabilities to predict red vs wine
+glm.predict = ifelse(glm.probability > 0.5, "white", "red")
+# Lets use a confusion matrix to see how the logistic regression model performed
+testOutcomeValues = cbind(test$color)
+testOutcomeValues = ifelse(testOutcomeValues == 1, "red", "white")
+# Lets see our confusion matrix and accuracy values
+confMat <- table(glm.predict, testOutcomeValues)
+# Accuracy:
+mean(glm.predict == testOutcomeValues)
+
 ```
 #### Interpretation of Results:
 
@@ -131,8 +171,19 @@ The mean quality for red wine and white wine are statistically significant. Howe
 
 #### Interpretation of Results:
 
-### 4. Logistic
+### Assumptions for Logistic Regression
+1.linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1) 
+2.independence of errors: same as linear regression 
+3.multicollinearity: same as linear regression 
+plus, there are some unique problems of its own: 
+1.incomplete information: need full combinations of variables 
+2.complete separation: logistic regression fails if your data does not overlap
+
+
+### 4. Which factors are the biggest predictor of pH?
 ```{R}
+
+
 
 ```
 #### Interpretation of Results:
