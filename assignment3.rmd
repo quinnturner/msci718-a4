@@ -76,9 +76,6 @@ qqplot.quality
 
 
 library(car)
-wineDataFactored <- wineData
-wineDataFactored$quality <- factor(wineData$quality, ordered = T)
-leveneTest(wineDataFactored$fixed.acidity, wineDataFactored$quality)
 
 cor(wineData, method="kendall") ##check method based on assumptions
 ```
@@ -137,8 +134,13 @@ the dependent test also requires:
 3. scores in different treatment conditions are independent (come from different people) 
 4. homogeneity of variance (if you have unequal group sizes)
 ```{r}
+wineDataFactored <- wineData
+wineDataFactored$quality <- factor(wineData$quality, ordered = T)
+leveneTest(wineDataFactored$fixed.acidity, wineDataFactored$quality)
+
 ggplot(redWineData, aes(quality)) + geom_histogram()
 ggplot(whiteWineData, aes(quality)) + geom_histogram()
+ggplot(wineData, aes(quality)) + geom_histogram()
 
 t.test(redWineData$quality, whiteWineData$quality)
 #dep.t.test <-t.test(redWineData$quality, whiteWineData$quality, paired=TRUE)
