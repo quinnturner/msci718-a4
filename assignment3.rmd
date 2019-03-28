@@ -75,12 +75,19 @@ ggplot(wineData, aes(pHTransformed)) + geom_histogram(aes(y=..density..), binwid
 
 ##Normally Distributed Variables
 From these graphs, the following variables appear to be normally distributed:
-fixed.acidity
-citric.acid
-chlorides
-sulphates
-quality
-pH
+* fixed.acidity
+* citric.acid
+* chlorides (semi bimodal)
+* sulphates
+* quality
+* pH (transformed)
+* density
+
+The following were not normally distributed
+* residual sugar (positive skew)
+* total sulphur dioxide (bimodal)
+* alcohol 
+
 
 ## Testing for Correlation
 ```{r}
@@ -106,7 +113,7 @@ From Levene's test (of the variables found to be normal above), we find that cit
 
 ### 1. What factors impact wine quality? Hypothesis: Low acidity and sugar content are major indicators of wine quality.
 
-####Linear Regression
+#### 1.1 Linear Regression
 #####Assumptions for Linear Regression
 1. All predictor variables must be quantitative or categorical, and outcome must be quantitative, continuous, and unbounded (Y)
 2. Non-zero variance (Y)
@@ -132,7 +139,7 @@ Glancing at the values received from the estimate, density has the largest negat
 
 ### 2. What factors predict wine colour? Hypothesis: Acidity is a strong predictor of wine colour (i.e. red vs. white)
 
-####Linear Regression
+#### 2.1 Linear Regression
 ```{r}
 # Note, the parameters provided do not include quality since this is a subjective measure.
 wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol, data=wineData)
@@ -145,7 +152,7 @@ summary(wineColor.model)
 #### Interpretation of Results:
 Density has the largest positive correlation with wine colour (co-efficient = 13.47), with chlorides following after (co-efficient = 0.76). Each have a p-value of less than 0.05. Contradictory to our hypothesis, fixed and volatile acidity were not strong predictors of wine colour.
 
-####Logistic Regression
+#### 2.2 Logistic Regression
 #####Assumptions for Logistic Regression
 1. Linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1)
 2. Independence of errors: same as linear regression
