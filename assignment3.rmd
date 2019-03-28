@@ -150,6 +150,14 @@ summary(wineColor.model)
 # Remoed variables with low t-values
 wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + residual.sugar + chlorides + total.sulfur.dioxide + density + alcohol, data=wineData)
 summary(wineColor.model)
+```
+
+#### Interpretation of Results:
+Density has the largest positive correlation with wine colour (co-efficient = 13.47), with chlorides following after (co-efficient = 0.76). Each have a p-value of less than 0.05. Contradictory to our hypothesis, fixed and volatile acidity were not strong predictors of wine colour.
+
+#### 2.2 Logistic Regression
+```{r}
+#Lets use Logistic Regression to try and predict wine colour!
 
 # We'll want to use some train-test split on the data to validate our logistic regression model.
 wineDataShuffled <- wineData[sample(nrow(wineData)),]
@@ -158,8 +166,6 @@ wineLengthEightyP <- as.integer(nrow(wineDataShuffled)*0.8)  # 5197
 #create train and test set; 60%-40% split
 train = wineDataShuffled[1:5197,]
 test = wineDataShuffled[5198:6497,]
-
-#Lets use Logistic Regression to try and predict wine colour!
 
 # Lets check out a bunch of feature variables
 glm.fit1 = glm(color ~ pHTransformed + volatile.acidity + chlorides + total.sulfur.dioxide, data = train, family = binomial)
@@ -191,10 +197,7 @@ confMat <- table(glm.predict, testOutcomeValues)
 mean(glm.predict == testOutcomeValues)
 
 ```
-#### Interpretation of Results:
-Density has the largest positive correlation with wine colour (co-efficient = 13.47), with chlorides following after (co-efficient = 0.76). Each have a p-value of less than 0.05. Contradictory to our hypothesis, fixed and volatile acidity were not strong predictors of wine colour.
-
-#### 2.2 Logistic Regression
+```
 
 #####Assumptions for Logistic Regression
 1. Linearity: linear relationship between continuous predictors and the logit of the outcome variable (see section 8.8.1)
