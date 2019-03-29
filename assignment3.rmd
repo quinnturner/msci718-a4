@@ -295,10 +295,21 @@ plus, there are some unique problems of its own:
 We would like to look if alcohol differs among quality types. We use one-way ANOVA this time.
 
 ```{r}
-wineAovModel<-aov(alcohol~quality, data = wineData)
-summary(wineAovModel)
+whiteWineAovModel<-aov(alcohol~quality, data = small)
+summary(whiteWineAovModel)
+
+redWineAovModel<-aov(alcohol~quality, data = redWineData)
+summary(redWineAovModel)
 ```
 
-#### Interpretation of Results:
+The result of the one-way ANOVA show significant difference in alcohol content among quality types for both white wine and red wine. This is clear by the high F-statistic and small p-value.
 
-The result of the one-way ANOVA show significant difference in alcohol content among quality types. This is clear by the high F-statistic and small p-value.
+Interestingly, the F value for white wine is roughly double the F value for red wine. This is likely due to the sample size. To test this, we can subset the data for white wine.
+
+```{r}
+smallerWhiteWine <- whiteWineData[1:1359,]
+smallerWhiteWineAovModel<-aov(alcohol~quality, data = smallerWhiteWine)
+summary(smallerWhiteWineAovModel)
+```
+
+The p-value is still significant while the F value is now smaller than red wine.
