@@ -20,11 +20,9 @@ library(car)
     + Normally Distributed Variables
     + Correlation using Levene's Test
 2. Hypothesis
-    + Hypothesis #1: Low acidity and sugar content are major indicators of wine quality (Linear regression)
+    + Hypothesis #1: Low acidity and sugar content are major indicators of wine quality (Linear regression and ANOVA)
     + Hypothesis #2: Acidity is a strong predictor of wine colour (Logistic & linear regression)
     + Hypothesis #3: Red wine is of higher quality (Comparison of two means)
-    + Hypothesis #4: Across all alcohol-levels, high sulphate content produces higher quality wine (Multi-variate analysis)
-
 
 ## Set up datasets
 ```{r}
