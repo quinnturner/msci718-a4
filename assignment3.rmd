@@ -4,35 +4,18 @@ output: html_document
 ---
 ```{r setup, include=FALSE}
 #knitr::opts_chunk$set(echo = TRUE)
-#install.packages("car")
 library(ggplot2)
 library(pastecs)
-
-#set up datasets
-redWineData <- read.csv("winequality-red.csv", header=T, sep = ";")
-redWineData$color <- 1
-redWineData$pHTransformed <- 10^redWineData$pH
-redWineData$pH <- NULL
-whiteWineData <- read.csv("winequality-white.csv", header=T, sep = ";")
-whiteWineData$color <- 0
-whiteWineData$pHTransformed <- 10^whiteWineData$pH
-whiteWineData$pH <- NULL
-
-head(whiteWineData)
-head(redWineData)
-
-wineData <- rbind(whiteWineData, redWineData)
-
-str(wineData)
+library(car)
 ```
 
-###Team Members
+### Team Members
 * Quinn Turner // sqturner // 20576575 - Exploratory Data & ANOVA
 * Rebecca Rayner // rsrayner // 20562488 - Linear Regression & Two Means
 * Yusuf Khaled // yhbkhale // 20508841 - Logistic Regression
 * Samantha Villaluz // skvillal // 20582656 - Linear Regression & Two Means
 
-###Assignment Breakdown
+### Assignment Breakdown
 1. Exploratory Data Analysis
     + Normally Distributed Variables
     + Correlation using Levene's Test
@@ -40,13 +23,43 @@ str(wineData)
     + Hypothesis #1: Low acidity and sugar content are major indicators of wine quality (Linear regression)
     + Hypothesis #2: Acidity is a strong predictor of wine colour (Logistic & linear regression)
     + Hypothesis #3: Red wine is of higher quality (Comparison of two means)
-    +Hypothesis #4: (ANOVA)
+    + Hypothesis #4: Across all alcohol-levels, high sulphate content produces higher quality wine (Multi-variate analysis)
 
 
-##Exploratory Data Analysis
+## Set up datasets
+```{r}
+redWineData <- read.csv("winequality-red.csv", header=T, sep = ";")
+# Reduces 1599 observations to 1359 observations
+redWineData <- redWineData[!duplicated(redWineData), ]
+redWineData$color <- 1
+redWineData$pHTransformed <- 10^redWineData$pH
+redWineData$pH <- NULL
+redWineData$quality <- factor(redWineData$quality, ordered = T)
+
+head(whiteWineData)
+
+whiteWineData <- read.csv("winequality-white.csv", header=T, sep = ";")
+# Reduces 4898 observations to 3961 observations
+whiteWineData <- whiteWineData[!duplicated(whiteWineData), ]
+whiteWineData$color <- 0
+whiteWineData$pHTransformed <- 10^whiteWineData$pH
+whiteWineData$pH <- NULL
+whiteWineData$quality <- factor(whiteWineData$quality, ordered = T)
+
+head(redWineData)
+
+wineData <- rbind(whiteWineData, redWineData)
+
+str(wineData)
+```
+
+
+## Exploratory Data Analysis
+
+We begin by determining the underlying distribution for each variable within the wine dataset. This will allow us to determine which tests and analyses we can perform on what variables, as well as getting a feel for the data.
+
 ```{r}
 # Per-variable histogram
-
 ggplot(wineData, aes(fixed.acidity)) + geom_histogram(aes(y=..density..), binwidth = .1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of fixed acidity', x = 'Fixed acidity') + geom_vline(aes(xintercept=mean(fixed.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 
 ggplot(wineData, aes(volatile.acidity)) + geom_histogram(aes(y=..density..), binwidth = .1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of volatile acidity', x = 'Volatile acidity') + geom_vline(aes(xintercept=mean(volatile.acidity)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
@@ -69,13 +82,32 @@ ggplot(wineData, aes(alcohol)) + geom_histogram(aes(y=..density..), binwidth = .
 
 ggplot(wineData, aes(quality)) + geom_histogram(aes(y=..density..), binwidth = 1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of quality', x = 'Quality') + geom_vline(aes(xintercept=mean(quality)), color="red", linetype="dashed", size=1)
 
-ggplot(wineData, aes(color)) + geom_histogram(binwidth = 1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of color', x = 'Color') + geom_vline(aes(xintercept=mean(color)), color="red", linetype="dashed", size=1)
+ggplot(wineData, aes(color)) + geom_histogram(binwidth = 1, color="darkblue", fill="lightblue") + labs(title = 'Histogram of color', x = 'Color')
 
 ggplot(wineData, aes(pHTransformed)) + geom_histogram(aes(y=..density..), binwidth = 100, color="darkblue", fill="lightblue") + labs(title = 'Histogram of pH transformed', x = 'pH transformed') + geom_vline(aes(xintercept=mean(pHTransformed)), color="red", linetype="dashed", size=1) + geom_density(alpha=.2, fill="#FF6666")
 ```
 
-##Normally Distributed Variables
-From these graphs, the following variables appear to be normally distributed:
+We now have have an glimpse of understanding for the distribution of each variable for wine. These histograms include both red and white wine in one plot. Most variables are positively skewed.
+
+For a closer look at normality, we can show QQ plots. To reduce variance, we can view just white wine alone.
+
+```{r}
+qqPlot(whiteWineData$fixed.acidity)
+qqPlot(whiteWineData$volatile.acidity)
+qqPlot(whiteWineData$citric.acid)
+qqPlot(whiteWineData$residual.sugar)
+qqPlot(whiteWineData$chlorides)
+qqPlot(whiteWineData$free.sulfur.dioxide)
+qqPlot(whiteWineData$total.sulfur.dioxide)
+qqPlot(whiteWineData$total.sulfur.dioxide)
+qqPlot(whiteWineData$density)
+qqPlot(whiteWineData$sulphates)
+qqPlot(whiteWineData$alcohol)
+qqPlot(whiteWineData$quality)
+qqPlot(whiteWineData$pHTransformed)
+```
+
+From these graphs, the following variables could be argued to have an underlying normally distribution:
 * fixed.acidity
 * citric.acid
 * chlorides (semi bimodal)
@@ -84,25 +116,22 @@ From these graphs, the following variables appear to be normally distributed:
 * pH (transformed)
 * density
 
-The following were not normally distributed
+The following are not normally distributed
 * residual sugar (positive skew)
 * total sulphur dioxide (bimodal)
 * alcohol
 
+From the QQ plots, most variables are right-skewed and none of them are perfectly normal
 
 ## Testing for Correlation
 ```{r}
-#check
-wineDataFactored <- wineData
-wineDataFactored$quality <- factor(wineData$quality, ordered = T)
 
 #broken when run pls fix
-#leveneTest(wineDataFactored$fixed.acidity, wineDataFactored$quality)
-#leveneTest(wineDataFactored$citric.acid, wineDataFactored$quality)
-#leveneTest(wineDataFactored$chlorides, wineDataFactored$quality)
-#leveneTest(wineDataFactored$sulphates, wineDataFactored$quality)
-#leveneTest(wineDataFactored$pH, wineDataFactored$quality)
-library(car)
+#leveneTest(wineData$fixed.acidity, wineData$quality)
+#leveneTest(wineData$citric.acid, wineData$quality)
+#leveneTest(wineData$chlorides, wineData$quality)
+#leveneTest(wineData$sulphates, wineData$quality)
+#leveneTest(wineData$pH, wineData$quality)
 
 cor(wineData, method="kendall")
 ```
@@ -131,6 +160,22 @@ summary(wineQuality.model)
 ```
 
 ```{r}
+ggplot(data=wineData, aes(x=quality, y=volatile.acidity, group=quality)) +
+  geom_boxplot() +
+  geom_jitter(width=0.1, height=0.5, aes(color="red"))
+```
+
+It seems that highly acidic wines tend to be of lower quality, though there is significant variance.
+
+```{r}
+ggplot(data=wineData, aes(x=quality, y=residual.sugar, group=quality)) +
+  geom_boxplot() +
+  geom_jitter(width=0.1, height=0.5, aes(color="red"))
+```
+
+By itself, residual sugar level does not seem to be correlated with the quality of the wine.
+
+```{r}
 ggplot(wineData, aes(y=quality, x=density)) + geom_jitter(width=0.1) + facet_grid(~color)
 ```
 
@@ -144,12 +189,16 @@ Glancing at the values received from the estimate, density has the largest negat
 
 ```{r}
 # Note, the parameters provided do not include quality since this is a subjective measure.
-wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol, data=wineData)
-summary(wineColor.model)
+wineColor.modelFull <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol, data=wineData)
+summary(wineColor.modelFull)
 
-# Remoed variables with low t-values
-wineColor.model <- lm(color ~ fixed.acidity + volatile.acidity + residual.sugar + chlorides + total.sulfur.dioxide + density + alcohol, data=wineData)
-summary(wineColor.model)
+# Removed variables with low t-values
+wineColor.modelReduced <- lm(color ~ fixed.acidity + volatile.acidity + residual.sugar + chlorides + total.sulfur.dioxide + density + alcohol, data=wineData)
+summary(wineColor.modelReduced)
+
+Anova(wineColor.modelFull, type = 3)
+
+Anova(wineColor.modelReduced, type = 3)
 ```
 
 #### Interpretation of Results:
@@ -197,7 +246,8 @@ confMat <- table(glmPredictTest, testOutcomeValues)
 mean(glmPredictTest == testOutcomeValues)
 
 ```
-```
+
+
 #### Interpretation of Results:
 As we can see, the logistic regression model produces quite good results: 97.3% accuracy over training data and 97.0% accuracy over the testing data. It is a good sign that the accuracy barely drops between training and testing data, as this ensures the model hasn't overfit to the learned data. Based on the fact that all of the feature variables used in the model (pH, volatile acidity, chlorides, sulfur dioxide) were shown to be significantly related to our predictor variable in the summary of the model's fit, it makes sense that these variables would form a well-performing logistic regression model.
 
@@ -219,8 +269,6 @@ Can't use stat_desc because there are too many datapoints
 2. Data are at least interval (Yes, when not-factored)
 
 ```{r}
-ggplot(wineData, aes(quality)) + geom_histogram()
-
 t.test(redWineData$quality, whiteWineData$quality)
 
 line <- ggplot(wineData, aes(color, quality))
@@ -238,22 +286,16 @@ plus, there are some unique problems of its own:
 2.complete separation: logistic regression fails if your data does not overlap
 
 
-### 4. Which factors are the biggest predictor of pH?
-```{R}
+### 4.ANOVA
 
 
+We would like to look if alcohol differs among quality types. We use one-way ANOVA this time.
 
+```{r}
+wineAovModel<-aov(alcohol~quality, data = wineData)
+summary(wineAovModel)
 ```
 
 #### Interpretation of Results:
 
-### 5. ANOVA
-assumptions
-1.homogeneity of variance
-2.observations are independent
-3.distributions within groups are normally distributed
-in some cases, the assumptions don't need to be met there are subtleties here, but in general, with equal group sizes ANOVA is robust to violations of normality homogeneity details in DSUR 10.3.2
-```{R}
-
-```
-#### Interpretation of Results:
+The result of the one-way ANOVA show significant difference in alcohol content among quality types. This is clear by the high F-statistic and small p-value.
