@@ -10,7 +10,7 @@ library(car)
 ```
 
 ### Team Members
-* Quinn Turner // sqturner // 20576575 - Exploratory Data & ANOVA
+* Quinn Turner // sqturner // 20576575 - Exploratory Data & Linear Regression & ANOVA
 * Rebecca Rayner // rsrayner // 20562488 - Linear Regression & Two Means
 * Yusuf Khaled // yhbkhale // 20508841 - Logistic Regression
 * Samantha Villaluz // skvillal // 20582656 - Linear Regression & Two Means
