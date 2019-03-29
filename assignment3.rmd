@@ -189,15 +189,19 @@ Glancing at the values received from the estimate, density has the largest negat
 # Note, the parameters provided do not include quality since this is a subjective measure.
 wineColor.modelFull <- lm(color ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pHTransformed + sulphates + alcohol, data=wineData)
 summary(wineColor.modelFull)
+```
 
+All variables are considered significant in determining the colour of the wine; p-value < 2e-16 for most variables.
+
+However, if we wanted to reduce the number of variables required to make a good prediction, we can remove some with the lowest abs(t-value) and still have an R-squared around 0.85.
+
+```{r}
 # Removed variables with low t-values
 wineColor.modelReduced <- lm(color ~ fixed.acidity + volatile.acidity + residual.sugar + chlorides + total.sulfur.dioxide + density + alcohol, data=wineData)
 summary(wineColor.modelReduced)
-
-Anova(wineColor.modelFull, type = 3)
-
-Anova(wineColor.modelReduced, type = 3)
 ```
+
+This model uses 7 variables instead of 11 and only has an R-squared value that's ~0.01 lower. This may be "good enough" of a predictor that conveniently requires less variables to input.
 
 #### Interpretation of Results:
 Density has the largest positive correlation with wine colour (co-efficient = 13.47), with chlorides following after (co-efficient = 0.76). Each have a p-value of less than 0.05. Contradictory to our hypothesis, fixed and volatile acidity were not strong predictors of wine colour.
