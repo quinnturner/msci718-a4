@@ -267,7 +267,7 @@ Can't use stat_desc because there are too many datapoints
 2. Data are at least interval (Yes, when not-factored)
 
 ```{r}
-t.test(redWineData$quality, whiteWineData$quality)
+t.test(as.numeric(redWineData$quality), as.numeric(whiteWineData$quality))
 
 line <- ggplot(wineData, aes(color, quality))
 line + stat_summary(fun.y = mean, geom = "line", size = 1, aes(group=1), colour = "#FF6633") + stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, size = 0.75, colour = "#990000") + stat_summary(fun.y = mean, geom = "point", size = 4, colour = "#990000") + stat_summary(fun.y = mean, geom = "point", size = 3, colour = "#FF6633") + labs(x = "color", y = "Quality")
