@@ -122,15 +122,16 @@ The following are not normally distributed
 From the QQ plots, most variables are right-skewed and none of them are perfectly normal
 
 ## Testing for Correlation
+
 ```{r}
+leveneTest(wineData$fixed.acidity, wineData$quality)
+leveneTest(wineData$citric.acid, wineData$quality)
+leveneTest(wineData$chlorides, wineData$quality)
+leveneTest(wineData$sulphates, wineData$quality)
+leveneTest(wineData$pHTransformed, wineData$quality)
+```
 
-#broken when run pls fix
-#leveneTest(wineData$fixed.acidity, wineData$quality)
-#leveneTest(wineData$citric.acid, wineData$quality)
-#leveneTest(wineData$chlorides, wineData$quality)
-#leveneTest(wineData$sulphates, wineData$quality)
-#leveneTest(wineData$pH, wineData$quality)
-
+```{r}
 cor(wineData, method="kendall")
 ```
 
