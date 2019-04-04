@@ -41,21 +41,14 @@ Our objective for this analysis was to analyze _______________.
 
 # Analysis
 
-Let's begin by importing and getting a glimpse of the dataset.
+Let's begin by importing the dataset, defining the variables, and exploring the data.
 
 ```{r}
 matData <- read.csv("student-alcohol-consumption/student-mat.csv")
 porData <- read.csv("student-alcohol-consumption/student-por.csv")
-head(matData)
-head(porData)
 ```
 
-
-We are concerned that this dataset is rather small the data does not accurately reflect the average student.
-
-## Variables
-
-Here is a description of the variables in the dataset (provided by the orignial Kaggle source):
+Here is a description of the variables in the dataset (provided by the original Kaggle source):
 
 1. school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira)
 1. sex - student's sex (binary: 'F' - female or 'M' - male)
@@ -88,15 +81,36 @@ Here is a description of the variables in the dataset (provided by the orignial 
 1. health - current health status (numeric: from 1 - very bad to 5 - very good)
 1. absences - number of school absences (numeric: from 0 to 93)
 
-Based on the description of the variables, we deemed that it was appropriate to make the following transformations to the imported dataset.
+These grades are related with the course subject, Math or Portuguese:
 
-1. Total <2 - very low to 10 - very high>: Sum of students' drinking habits
-1. 
+- G1 - first period grade (numeric: from 0 to 20)
+- G2 - second period grade (numeric: from 0 to 20)
+- G3 - final grade (numeric: from 0 to 20, output target)
+
+Based on the description of the variables, we deemed that it was appropriate to make the following transformations to the imported dataset:
+
+1. Add variable `Talc` <2 - very low to 10 - very high> (Sum of students' drinking habits)
+1. Add factor `famrel` <1 - very bad to 5 - excellent>
+1. Add factor `freetime` <1 - very low to 5 - very high>
+1. Add factor `goout` <1 - very low to 5 - very high>
+1. Add factor `health` <1 - very bad to 5 - very good>
 
 ```{r, include=FALSE}
-matData$Total <- matData$Walc + matData$Dalc
-porData$Total <- porData$Walc + porData$Dalc
+matData$Talc <- matData$Walc + matData$Dalc
+porData$Talc <- porData$Walc + porData$Dalc
 
+matData$famrel <- factor(matData$famrel, levels = c("1","2","3","4","5"),
+                    labels = c("Very Bad","Bad","Okay","Good","Excellent"))
+porData$famrel <- factor(porData$famrel, levels = c("1","2","3","4","5"),
+                    labels = c("Very Bad","Bad","Okay","Good","Excellent"))
+matData$freetime <- factor(matData$freetime, levels = c("1","2","3","4","5"),
+                    labels = c("Very Low","Low","Moderate","High","Very High"))
+porData$freetime <- factor(porData$freetime, levels = c("1","2","3","4","5"),
+                    labels = c("Very Low","Low","Moderate","High","Very High"))
+matData$goout <- factor(matData$goout, levels = c("1","2","3","4","5"),
+                    labels = c("Very Low","Low","Moderate","High","Very High"))
+porData$goout <- factor(porData$goout, levels = c("1","2","3","4","5"),
+                    labels = c("Very Low","Low","Moderate","High","Very High"))
 matData$health <- factor(matData$health, levels = c("1","2","3","4","5"),
                     labels = c("Very Bad","Bad","Okay","Good","Very Good"))
 porData$health <- factor(porData$health, levels = c("1","2","3","4","5"),
@@ -104,6 +118,13 @@ porData$health <- factor(porData$health, levels = c("1","2","3","4","5"),
 ```
 
 Additional note: there are 382 students that belong to both datasets so there are only 13 students who took math did not take Portugese. It is not likely or appropriate that we can find statistically or practically significant differences between the students who took math and not Portugese or vice-versa. This is because we don't know whether the remaining Portugese students took math or not since they could have been in another class that was not included in the data collection process.
+
+Here, we get a glimpse of the dataset with the appropriate factors and derived variables.
+
+```{r}
+head(matData)
+head(porData)
+```
 
 ## Set up
 
