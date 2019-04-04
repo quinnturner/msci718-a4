@@ -13,7 +13,17 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
 ```
+
+
+Notes:
+
+**affect size**
+Don't need to test for normality for all
+**Practical significance**
+**Simpson's Paradox**
+
 
 # Background
 
@@ -21,20 +31,27 @@ For our final assignment for MSCI 718, we are asked to analyze a dataset of our 
 
 We chose to analyze student alcohol consumption in secondary schools. The data includes social, gender and study data from secondary school students. The data was provided by the UC Irving Machine Learning Repository and is available on [Kaggle](https://www.kaggle.com/uciml/student-alcohol-consumption).
 
+This analysis will use two datasets, one set includes information on students taking a math course and the other includes information on students taking a Portugese course.
+
+
 # Objectives
 
 Our objective for this analysis was to analyze _______________.
+
 
 # Analysis
 
 Let's begin by importing and getting a glipse of the dataset.
 
 ```{r}
-student_mat <- read.csv("student-alcohol-consumption/student-mat.csv")
-student_por <- read.csv("student-alcohol-consumption/student-por.csv")
-head(student_mat)
-head(student_por)
+matData <- read.csv("student-alcohol-consumption/student-mat.csv")
+porData <- read.csv("student-alcohol-consumption/student-por.csv")
+head(matData)
+head(porData)
 ```
+
+
+We are concerned that this dataset is rather small the data does not accurately reflect the average student.
 
 ## Variables
 
@@ -71,9 +88,27 @@ Here is a description of the variables in the dataset (provided by the orignial 
 1. health - current health status (numeric: from 1 - very bad to 5 - very good)
 1. absences - number of school absences (numeric: from 0 to 93)
 
-
 Based on the description of the variables, we deemed that it was appropriate to make the following transformations to the imported dataset.
 
-1. Variable name <variable type>: Reasoning for the transformation
+1. Total <2 - very low to 10 - very high>: Sum of students' drinking habits
+1. 
 
+```{r, include=FALSE}
+matData$Total <- matData$Walc + matData$Dalc
+porData$Total <- porData$Walc + porData$Dalc
 
+matData$health <- factor(matData$health, levels = c("1","2","3","4","5"),
+                    labels = c("Very Bad","Bad","Okay","Good","Very Good"))
+porData$health <- factor(porData$health, levels = c("1","2","3","4","5"),
+                    labels = c("Very Bad","Bad","Okay","Good","Very Good"))
+```
+
+Additional note: there are 382 students that belong to both datasets so there are only 13 students who took math did not take Portugese. It is not likely or appropriate that we can find statistically or practically significant differences between the students who took math and not Portugese or vice-versa. This is because we don't know whether the remaining Portugese students took math or not since they could have been in another class that was not included in the data collection process.
+
+## Set up
+
+```{r}
+# Length of each dataframe
+matDataLen <- dim(matData)[1]
+porDataLen <- dim(porData)[1]
+```
