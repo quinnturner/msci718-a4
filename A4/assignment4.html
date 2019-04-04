@@ -75,7 +75,9 @@ h6 {
 </style>
 
 
+</head>
 
+<body>
 
 <style type="text/css">
 .main-container {
@@ -106,6 +108,8 @@ summary {
 </style>
 
 
+
+<div class="container-fluid main-container">
 
 <!-- tabsets -->
 
@@ -180,26 +184,17 @@ $(document).ready(function () {
 
 
 
-</head>
-
-<body>
-
-
-<div class="container-fluid main-container">
-
-
-
 
 <div class="fluid-row" id="header">
 
 
 
 <h1 class="title toc-ignore">Assignment 4 - Analyzing Student Alcohol Consumption</h1>
-<h4 class="author">Stephen Quinn Turner - sqturner - 20576575</h4>
-<h4 class="author">Rebecca Rayner - rsrayner - 20562488</h4>
-<h4 class="author">Yusuf Khaled - yhbkhale - 20508841</h4>
-<h4 class="author">Samantha Villaluz - skvillal - 20582656</h4>
-<h4 class="date">Friday, April 05, 2019</h4>
+<h4 class="author"><em>Stephen Quinn Turner - sqturner - 20576575</em></h4>
+<h4 class="author"><em>Rebecca Rayner - rsrayner - 20562488</em></h4>
+<h4 class="author"><em>Yusuf Khaled - yhbkhale - 20508841</em></h4>
+<h4 class="author"><em>Samantha Villaluz - skvillal - 20582656</em></h4>
+<h4 class="date"><em>Friday, April 05, 2019</em></h4>
 
 </div>
 
@@ -262,11 +257,11 @@ porData &lt;- read.csv(&quot;student-alcohol-consumption/student-por.csv&quot;)<
 </ul>
 <p>Based on the description of the variables, we deemed that it was appropriate to make the following transformations to the imported dataset:</p>
 <ol style="list-style-type: decimal">
-<li>Add variable <code>Talc</code> &lt;2 - very low to 10 - very high&gt; (Sum of students’ drinking habits)</li>
-<li>Add factor <code>famrel</code> &lt;1 - very bad to 5 - excellent&gt;</li>
-<li>Add factor <code>freetime</code> &lt;1 - very low to 5 - very high&gt;</li>
-<li>Add factor <code>goout</code> &lt;1 - very low to 5 - very high&gt;</li>
-<li>Add factor <code>health</code> &lt;1 - very bad to 5 - very good&gt;</li>
+<li>Add variable <code>Talc</code> <em>&lt;2 - very low to 10 - very high&gt; (Sum of students’ drinking habits)</em></li>
+<li>Add factor <code>famrel</code> <em>&lt;1 - very bad to 5 - excellent&gt;</em></li>
+<li>Add factor <code>freetime</code> <em>&lt;1 - very low to 5 - very high&gt;</em></li>
+<li>Add factor <code>goout</code> <em>&lt;1 - very low to 5 - very high&gt;</em></li>
+<li>Add factor <code>health</code> <em>&lt;1 - very bad to 5 - very good&gt;</em></li>
 </ol>
 <p>Additional note: there are 382 students that belong to both datasets so there are only 13 students who took math did not take Portugese. It is not likely or appropriate that we can find statistically or practically significant differences between the students who took math and not Portugese or vice-versa. This is because we don’t know whether the remaining Portugese students took math or not since they could have been in another class that was not included in the data collection process.</p>
 <p>Here, we get a glimpse of the dataset with the appropriate factors and derived variables.</p>
