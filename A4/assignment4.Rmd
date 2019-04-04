@@ -89,11 +89,11 @@ These grades are related with the course subject, Math or Portuguese:
 
 Based on the description of the variables, we deemed that it was appropriate to make the following transformations to the imported dataset:
 
-1. Add variable `Talc` <2 - very low to 10 - very high> (Sum of students' drinking habits)
-1. Add factor `famrel` <1 - very bad to 5 - excellent>
-1. Add factor `freetime` <1 - very low to 5 - very high>
-1. Add factor `goout` <1 - very low to 5 - very high>
-1. Add factor `health` <1 - very bad to 5 - very good>
+1. Add variable `Talc` _<2 - very low to 10 - very high> (Sum of students' drinking habits)_
+1. Add factor `famrel` _<1 - very bad to 5 - excellent>_
+1. Add factor `freetime` _<1 - very low to 5 - very high>_
+1. Add factor `goout` _<1 - very low to 5 - very high>_
+1. Add factor `health` _<1 - very bad to 5 - very good>_
 
 ```{r, include=FALSE}
 matData$Talc <- matData$Walc + matData$Dalc
