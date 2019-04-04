@@ -120,6 +120,8 @@ matData$Talc2 <- sapply(matData$Talc, function(x) if(x <= 2) 'No' else if(x<=6) 
 matData$Talc2 <- factor(matData$Talc2, levels = c("No", "Low", "High"), 
                         labels = c("None", "Low Alc", "High Alc"))
 
+porData$Gavg <- rowMeans(cbind(porData$G1,porData$G2,porData$G3))
+matData$Gavg <- rowMeans(cbind(matData$G1,matData$G2,matData$G3))
 ```
 
 Additional note: there are 382 students that belong to both datasets so there are only 13 students who took math did not take Portugese. It is not likely or appropriate that we can find statistically or practically significant differences between the students who took math and not Portugese or vice-versa. This is because we don't know whether the remaining Portugese students took math or not since they could have been in another class that was not included in the data collection process.
@@ -149,4 +151,19 @@ colnames(attr(matData$Talc2, "contrasts")) <- c("Alcohol v No Alcohol", "High v 
 contrasts(matData$Talc2)
 HealthEffect <- aov(health ~ Talc2, data=matData)
 summary.lm(HealthEffect)
+```
+
+```{r}
+averageGradeModel<-lm(Gavg~., data=cbind(porData[,1:30], porData[35]))
+summary(averageGradeModel)
+```
+
+```{r}
+ggplot(porData, aes(x=Walc, y=Gavg, group=Walc))+
+  geom_boxplot()+
+  theme(legend.position="none")+
+  xlab("Daily alcohol consumption on weekends")+
+  ylab("Average Grades")+
+  ggtitle("Average Grade")
+
 ```
