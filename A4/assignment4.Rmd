@@ -41,7 +41,7 @@ Our objective for this analysis was to analyze _______________.
 
 # Analysis
 
-Let's begin by importing and getting a glipse of the dataset.
+Let's begin by importing and getting a glimpse of the dataset.
 
 ```{r}
 matData <- read.csv("student-alcohol-consumption/student-mat.csv")
