@@ -1,0 +1,16 @@
+---
+title: Assignment 4 - Analyzing Student Alcohol Consumption
+author:
+   - Stephen Quinn Turner - sqturner - 20576575
+   - Rebecca Rayner - rsrayner - 20562488
+   - Yusuf Khaled - yhbkhale - 20508841
+   - Samantha Villaluz - skvillal - 20582656
+date: "Friday, April 05, 2019"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
