@@ -213,3 +213,7 @@ ggplot(porData, aes(x=Walc, y=Gavg, group=Walc))+
   ggtitle("Average Grade")
 
 ```
+To Do: Discussion
+
+Maybe interesting to say that because we can only say if these are correlated but not what the causation is, there could be reason to believe that either causes either: i.e. people could get worse grades because they drink or people may drink more because they get worse grades.
+
