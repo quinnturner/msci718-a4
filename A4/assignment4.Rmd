@@ -169,7 +169,35 @@ HealthEffect.Female <- aov(as.numeric(health) ~ Talc2, data=porData.Female)
 summary.lm(HealthEffect.Total)
 summary.lm(HealthEffect.Male)
 summary.lm(HealthEffect.Female)
+
+## Failures vs Alcohol Consumption
+FailureEffect.Total <- aov(as.numeric(failures) ~ Talc2, data=porData)
+FailureEffect.Male <- aov(as.numeric(failures) ~ Talc2, data=porData.Male)
+FailureEffect.Female <- aov(as.numeric(failures) ~ Talc2, data=porData.Female)
+summary.lm(FailureEffect.Total)
+summary.lm(FailureEffect.Male)
+summary.lm(FailureEffect.Female)
+
+##Goout vs Alcohol Consumption
+GooutEffect.Total <- aov(as.numeric(goout) ~ Talc2, data=porData)
+GooutEffect.Male <- aov(as.numeric(goout) ~ Talc2, data=porData.Male)
+GooutEffect.Female <- aov(as.numeric(goout) ~ Talc2, data=porData.Female)
+summary.lm(GooutEffect.Total)
+summary.lm(GooutEffect.Male)
+summary.lm(GooutEffect.Female)
+
+##Grade vs Alcohol Consumption
+GradeEffect.Total <- aov(as.numeric(G3) ~ Talc2, data=porData)
+GradeEffect.Male <- aov(as.numeric(G3) ~ Talc2, data=porData.Male)
+GradeEffect.Female <- aov(as.numeric(G3) ~ Talc2, data=porData.Female)
+summary.lm(GradeEffect.Total)
+summary.lm(GradeEffect.Male)
+summary.lm(GradeEffect.Female)
 ```
+
+To Do: Add discussion
+
+For may of these variables, there is a statically significant effect found when all data is used, but many of these effects disappear when data is separated by sex. This could be that the statistical significance is only due to the higher number of datapoints, but that there isn't practical significance. Conversely, for going out and alcohol consumption there is a statiscially significant results when split by sex which suggests that the correlation is stronger.
 
 ```{r}
 averageGradeModel<-lm(Gavg~., data=cbind(porData[,1:30], porData[35]))
