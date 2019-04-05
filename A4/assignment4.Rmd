@@ -205,7 +205,7 @@ summary.lm(GradeEffect.Male)
 summary.lm(GradeEffect.Female)
 ```
 
-<<<<<<< HEAD
+
 ```{r}
 ggplot(porData, aes(Walc))+
   geom_bar(aes(fill = health), position = position_stack(reverse = TRUE))+
@@ -220,12 +220,6 @@ ggplot(porData, aes(Walc))+
   ggtitle("Weekly alcohol consumption seems to be correlated with going out")
 
 ```
-=======
-To Do: Add discussion
+
 
 For may of these variables, there is a statically significant effect found when all data is used, but many of these effects disappear when data is separated by sex. This could be that the statistical significance is only due to the higher number of datapoints, but that there isn't practical significance. Conversely, for going out and alcohol consumption there is a statiscially significant results when split by sex which suggests that the correlation is stronger.
->>>>>>> 7a5252029a2ea81d08460aa2566b582eaba88d3b
-
-To Do: Discussion
-
-Maybe interesting to say that because we can only say if these are correlated but not what the causation is, there could be reason to believe that either causes either: i.e. people could get worse grades because they drink or people may drink more because they get worse grades.
