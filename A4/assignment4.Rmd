@@ -152,36 +152,38 @@ we wish to explore how each of the four variables differ against heavy vs. moder
 
 For may of these variables, there is a statically significant effect found when all data is used, but many of these effects disappear when data is separated by sex. This could be that the statistical significance is only due to the higher number of datapoints, but that there isn't practical significance. Conversely, for going out and alcohol consumption there is a statiscially significant results when split by sex which suggests that the correlation is stronger.
 
-```{r}
-## Failures vs Alcohol Consumption
-
-##Separate by sex
-porData.Male <- subset(porData, porData$sex=="M")
-porData.Female <- subset(porData, porData$sex=="F")
-
-FailureEffect.Total <- aov(as.numeric(failures) ~ Talc2, data=porData)
-FailureEffect.Male <- aov(as.numeric(failures) ~ Talc2, data=porData.Male)
-FailureEffect.Female <- aov(as.numeric(failures) ~ Talc2, data=porData.Female)
-summary.lm(FailureEffect.Total)
-summary.lm(FailureEffect.Male)
-summary.lm(FailureEffect.Female)
-```
-
 ```{r include = FALSE}
-#Contrasts
+# Contrasts
 contrast1 <- c(-2, 1, 1)
 contrast2 <- c(0, -1, 1)
 contrasts(porData$Talc2) <- cbind(contrast1, contrast2)
 colnames(attr(porData$Talc2, "contrasts")) <- c("Alcohol v No Alcohol", "High v Low")
 contrasts(porData$Talc2)
+```
 
-## Health vs Alcohol Consumption
+```{r}
+# Health vs Alcohol Consumption
+
+# Separate by sex
+porData.Male <- subset(porData, porData$sex=="M")
+porData.Female <- subset(porData, porData$sex=="F")
+
 HealthEffect.Total <- aov(as.numeric(health) ~ Talc2, data=porData)
 HealthEffect.Male <- aov(as.numeric(health) ~ Talc2, data=porData.Male)
 HealthEffect.Female <- aov(as.numeric(health) ~ Talc2, data=porData.Female)
 summary.lm(HealthEffect.Total)
 summary.lm(HealthEffect.Male)
 summary.lm(HealthEffect.Female)
+```
+
+```{r include = FALSE}
+# Failures vs Alcohol Consumption 
+FailureEffect.Total <- aov(as.numeric(failures) ~ Talc2, data=porData)
+FailureEffect.Male <- aov(as.numeric(failures) ~ Talc2, data=porData.Male)
+FailureEffect.Female <- aov(as.numeric(failures) ~ Talc2, data=porData.Female)
+summary.lm(FailureEffect.Total)
+summary.lm(FailureEffect.Male)
+summary.lm(FailureEffect.Female)
 
 ##Goout vs Alcohol Consumption
 GooutEffect.Total <- aov(as.numeric(goout) ~ Talc2, data=porData)
