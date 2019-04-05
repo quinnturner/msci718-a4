@@ -154,6 +154,11 @@ For may of these variables, there is a statically significant effect found when 
 
 ```{r}
 ## Failures vs Alcohol Consumption
+
+##Separate by sex
+porData.Male <- subset(porData, porData$sex=="M")
+porData.Female <- subset(porData, porData$sex=="F")
+
 FailureEffect.Total <- aov(as.numeric(failures) ~ Talc2, data=porData)
 FailureEffect.Male <- aov(as.numeric(failures) ~ Talc2, data=porData.Male)
 FailureEffect.Female <- aov(as.numeric(failures) ~ Talc2, data=porData.Female)
@@ -169,10 +174,6 @@ contrast2 <- c(0, -1, 1)
 contrasts(porData$Talc2) <- cbind(contrast1, contrast2)
 colnames(attr(porData$Talc2, "contrasts")) <- c("Alcohol v No Alcohol", "High v Low")
 contrasts(porData$Talc2)
-
-##Separate by sex
-porData.Male <- subset(porData, porData$sex=="M")
-porData.Female <- subset(porData, porData$sex=="F")
 
 ## Health vs Alcohol Consumption
 HealthEffect.Total <- aov(as.numeric(health) ~ Talc2, data=porData)
@@ -203,22 +204,6 @@ GradeEffect.Female <- aov(G3 ~ Talc2, data=porData.Female)
 summary.lm(GradeEffect.Total)
 summary.lm(GradeEffect.Male)
 summary.lm(GradeEffect.Female)
-```
-
-
-```{r}
-ggplot(porData, aes(Walc))+
-  geom_bar(aes(fill = health), position = position_stack(reverse = TRUE))+
-  xlab("Weekly alcohol consumption")+
-  ylab("Count")+
-  ggtitle("Weekly alcohol consumption seems to be correlated with general health")
-
-ggplot(porData, aes(Walc))+
-  geom_bar(aes(fill = goout), position = position_stack(reverse = TRUE))+
-  xlab("Weekly alcohol consumption")+
-  ylab("Count")+
-  ggtitle("Weekly alcohol consumption seems to be correlated with going out")
-
 ```
 
 
