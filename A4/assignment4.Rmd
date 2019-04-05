@@ -38,6 +38,8 @@ This analysis will use two datasets, one set includes information on students ta
 
 Our objective for this analysis was to analyze the correlation between alcohol consumption, and other characteristics among Portuguese post-secondary school students. 
 
+# Hypothesis
+From the set of variables collected in this dataset, our hypothesis is that there is correlation between alcohol consumption and each of the following variables: health, goout, failures, grades (G3). Each of these hypothesis come from personal experience and/or curiosity.
 
 # Analysis
 
