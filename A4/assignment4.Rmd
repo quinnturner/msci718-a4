@@ -147,11 +147,18 @@ we wish to explore how each of the four variables differ against heavy vs. moder
 For may of these variables, there is a statically significant effect found when all data is used, but many of these effects disappear when data is separated by sex. This could be that the statistical significance is only due to the higher number of datapoints, but that there isn't practical significance. Conversely, for going out and alcohol consumption there is a statiscially significant results when split by sex which suggests that the correlation is stronger.
 
 ## Contrasts
-We desired to see if there was a difference in significance when we segmented the data using Total, just males, and just females when assessing correlation between alcohol consumption and failure.
+We desired to see if there was a difference in significance when we segmented the data using Total, just males, and just females when assessing correlation between alcohol consumption and final average.
 
-We found statistically significant results in failures for heavy vs. moderate drinkers with all genders but not when we created two data sets: one for males and one for females. 
+### All genders & Male
+* Stat sig difference in final average between drinkers and non-drinkers
+* Stat sig difference in final average between heavy drinkers and non-drinkers
+
+### Female
+* Not stat sig difference in final average between drinkers and non-drinkers
+* Not stat sig difference in final average between heavy drinkers and non-drinkers
 
 Below is a sample of the code used. We repeated this three more times with the other three variables.
+
 ```{r}
 #Contrasts
 contrast1 <- c(-2, 1, 1)
@@ -163,13 +170,13 @@ colnames(attr(porData$Talc2, "contrasts")) <- c("Alcohol vs. No Alcohol", "High 
 porData.Male <- subset(porData, porData$sex=="M")
 porData.Female <- subset(porData, porData$sex=="F")
 
-## Failures vs Alcohol Consumption
-FailureEffect.Total <- aov(as.numeric(failures) ~ Talc2, data=porData)
-FailureEffect.Male <- aov(as.numeric(failures) ~ Talc2, data=porData.Male)
-FailureEffect.Female <- aov(as.numeric(failures) ~ Talc2, data=porData.Female)
-summary.lm(FailureEffect.Total)
-summary.lm(FailureEffect.Male)
-summary.lm(FailureEffect.Female)
+##Grade vs Alcohol Consumption
+GradeEffect.Total <- aov(G3 ~ Talc2, data=porData)
+GradeEffect.Male <- aov(G3 ~ Talc2, data=porData.Male)
+GradeEffect.Female <- aov(G3 ~ Talc2, data=porData.Female)
+summary.lm(GradeEffect.Total)
+summary.lm(GradeEffect.Male)
+summary.lm(GradeEffect.Female)
 ```
 
 ```{r include = FALSE}
@@ -197,13 +204,39 @@ summary.lm(GradeEffect.Total)
 summary.lm(GradeEffect.Male)
 summary.lm(GradeEffect.Female)
 
-GradeEffect.Male <- aov(G3 ~ Talc2, data=porData.Male)
-GradeEffect.Female <- aov(G3 ~ Talc2, data=porData.Female)
-summary.lm(GradeEffect.Total)
-summary.lm(GradeEffect.Male)
-summary.lm(GradeEffect.Female)
+## Failures vs Alcohol Consumption
+FailureEffect.Total <- aov(as.numeric(failures) ~ Talc2, data=porData)
+FailureEffect.Male <- aov(as.numeric(failures) ~ Talc2, data=porData.Male)
+FailureEffect.Female <- aov(as.numeric(failures) ~ Talc2, data=porData.Female)
+summary.lm(FailureEffect.Total)
+summary.lm(FailureEffect.Male)
+summary.lm(FailureEffect.Female)
 ```
 
+```{r include = FALSE}
+# initial set-up for effect size analysis
+devtools::install_github("mtorchiano/effsize", force=TRUE)
+library(effsize)
+
+# creating segments to analyze
+noAlcMale <- subset(porData, porData$sex=="M" & Talc2 == "None")
+noAlcFemale <- subset(porData, porData$sex == "F" & Talc2 == "None")
+
+lowMale <- subset(porData, porData$sex=="M" & Talc2 == "Low Alc")
+lowFemale <- subset(porData, porData$sex == "F" & Talc2 == "Low Alc")
+
+highMale <- subset(porData, porData$sex=="M" & Talc2 == "High Alc")
+highFemale <- subset(porData, porData$sex == "F" & Talc2 == "High Alc")
+```
+
+## Cohen's d for Grades between Female and Male Heavy Drinkers
+We wish to obtain a comparison of two means of the results we obtained through the contrasts. It was gathered that there is a significant difference in male moderate drinkers vs. male heavy drinkers. Through finding the cohen's d value, we have obtained results for a SMALL effect size.
+
+```{r}
+cohen.d(lowMale$G3, highMale$G3)
+```
+
+## ANOVA -- @QUINN
 ```{r}
 GradeEffect2.Total <- aov(G3 ~ goout + Talc2, data=porData.Male)
 Anova(GradeEffect2.Total, type="III")
