@@ -1,0 +1,58 @@
+---
+title: "Assignment 4 Effect Size"
+author: "Samantha Villaluz"
+date: "April 5, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# devtools::install_github("mtorchiano/effsize", force=TRUE)
+library(effsize)
+```
+
+## Importing Data
+
+```{r}
+porData <- read.csv("student-alcohol-consumption/student-por.csv")
+
+# Create total alcohol column for contrasts
+porData$Talc <- porData$Walc + porData$Dalc
+porData$Talc2 <- sapply(porData$Talc, function(x) if(x <= 2) 'No' else if(x<=6) 'Low' else 'High')
+porData$Talc2 <- factor(porData$Talc2, levels = c("No", "Low", "High"), 
+                        labels = c("None", "Low Alc", "High Alc"))
+
+# Segment by gender
+porData.male <- subset(porData, porData$sex=="M")
+porData.female <- subset(porData, porData$sex=="F")
+
+noAlcMale <- subset(porData, porData$sex=="M" & Talc2 == "None")
+noAlcFemale <- subset(porData, porData$sex == "F" & Talc2 == "None")
+
+lowMale <- subset(porData, porData$sex=="M" & Talc2 == "Low Alc")
+lowFemale <- subset(porData, porData$sex == "F" & Talc2 == "Low Alc")
+
+highMale <- subset(porData, porData$sex=="M" & Talc2 == "High Alc")
+highFemale <- subset(porData, porData$sex == "F" & Talc2 == "High Alc")
+
+
+```
+## Cohen's d for Grades between Female and Male Heavy Drinkers
+```{r}
+cohen.d(highFemale$G3, highMale$G3)
+```
+
+
+## Assessment of Effect Size for Male vs. Female Health
+```{r}
+cohen.d(porData.female$health, porData.male$health, pooled = TRUE, conf.level = 0.95)
+```
+
+## Assessment of Effect Size for Male vs. Female Final Averages
+```{r}
+cohen.d(porData.female$G3, porData.male$G3, pooled = TRUE, conf.level = 0.95)
+```
+
+
+
+

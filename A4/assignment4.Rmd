@@ -37,8 +37,10 @@ This analysis will use two datasets, one set includes information on students ta
 
 # Objectives
 
-Our objective for this analysis was to analyze _______________.
+Our objective for this analysis was to analyze the correlation between alcohol consumption, and other characteristics among Portuguese post-secondary school students. 
 
+# Hypothesis
+From the set of variables collected in this dataset, our hypothesis is that there is correlation between alcohol consumption and each of the following variables: health, goout, failures, grades (G3). Each of these hypothesis come from personal experience and/or curiosity.
 
 # Analysis
 
@@ -205,6 +207,23 @@ ggplot(porData, aes(x=Walc, y=Gavg, group=Walc))+
   ggtitle("Average Grade")
 
 ```
+
+More visual analysis
+```{r}
+ggplot(porData, aes(Walc))+
+  geom_bar(aes(fill = health), position = position_stack(reverse = TRUE))+
+  xlab("Weekly alcohol consumption")+
+  ylab("Count")+
+  ggtitle("Weekly alcohol consumption seems to be correlated with general health")
+
+ggplot(porData, aes(Walc))+
+  geom_bar(aes(fill = goout), position = position_stack(reverse = TRUE))+
+  xlab("Weekly alcohol consumption")+
+  ylab("Count")+
+  ggtitle("Weekly alcohol consumption seems to be correlated with going out")
+
+```
+
 To Do: Discussion
 
 Maybe interesting to say that because we can only say if these are correlated but not what the causation is, there could be reason to believe that either causes either: i.e. people could get worse grades because they drink or people may drink more because they get worse grades.
