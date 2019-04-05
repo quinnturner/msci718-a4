@@ -30,15 +30,9 @@ Our objective for this analysis was to analyze the correlation between alcohol c
 # Hypothesis
 From the set of variables collected in this dataset, our hypothesis is that there is correlation between alcohol consumption and each of the following variables: health, goout, failures, grades (G3). Each of these hypothesis come from personal experience and/or curiosity. As students we know that when you go out you more you tend to drink more, which can cause you to sleep less, which can impact your grades and your overall health. For this reason we felt the variables chosen had a good chance of showing some correlation with alcohol consumption.
 
-<<<<<<< HEAD
-Our objective for this analysis was to analyze the correlation between alcohol consumption, and other characteristics among Portuguese post-secondary school students.
-=======
 # Background
->>>>>>> 7a5252029a2ea81d08460aa2566b582eaba88d3b
 
 This analysis will use two datasets, one set includes information on students taking a math course (matData) and the other includes information on students taking a Portugese course (porData).
-
-# Analysis
 
 Let's begin by importing the dataset, defining the variables, and exploring the data.
 
@@ -152,31 +146,45 @@ we wish to explore how each of the four variables differ against heavy vs. moder
 
 For may of these variables, there is a statically significant effect found when all data is used, but many of these effects disappear when data is separated by sex. This could be that the statistical significance is only due to the higher number of datapoints, but that there isn't practical significance. Conversely, for going out and alcohol consumption there is a statiscially significant results when split by sex which suggests that the correlation is stronger.
 
+## Contrasts
+We desired to see if there was a difference in significance when we segmented the data using Total, just males, and just females when assessing correlation between alcohol consumption and failure.
+
+We found statistically significant results in failures for heavy vs. moderate drinkers with all genders but not when we created two data sets: one for males and one for females. 
+
+Below is a sample of the code used. We repeated this three more times with the other three variables.
+
 ```{r include = FALSE}
 # Contrasts
 contrast1 <- c(-2, 1, 1)
 contrast2 <- c(0, -1, 1)
 contrasts(porData$Talc2) <- cbind(contrast1, contrast2)
-colnames(attr(porData$Talc2, "contrasts")) <- c("Alcohol v No Alcohol", "High v Low")
-contrasts(porData$Talc2)
+colnames(attr(porData$Talc2, "contrasts")) <- c("Alcohol vs. No Alcohol", "High vs. Low")
 ```
 
 ```{r}
-# Health vs Alcohol Consumption
-
 # Separate by sex
 porData.Male <- subset(porData, porData$sex=="M")
 porData.Female <- subset(porData, porData$sex=="F")
 
+
+## Failures vs Alcohol Consumption
+FailureEffect.Total <- aov(as.numeric(failures) ~ Talc2, data=porData)
+FailureEffect.Male <- aov(as.numeric(failures) ~ Talc2, data=porData.Male)
+FailureEffect.Female <- aov(as.numeric(failures) ~ Talc2, data=porData.Female)
+summary.lm(FailureEffect.Total)
+summary.lm(FailureEffect.Male)
+summary.lm(FailureEffect.Female)
+```
+
+```{r include = FALSE}
+# Health vs Alcohol Consumption
 HealthEffect.Total <- aov(as.numeric(health) ~ Talc2, data=porData)
 HealthEffect.Male <- aov(as.numeric(health) ~ Talc2, data=porData.Male)
 HealthEffect.Female <- aov(as.numeric(health) ~ Talc2, data=porData.Female)
 summary.lm(HealthEffect.Total)
 summary.lm(HealthEffect.Male)
 summary.lm(HealthEffect.Female)
-```
 
-```{r include = FALSE}
 # Failures vs Alcohol Consumption 
 FailureEffect.Total <- aov(as.numeric(failures) ~ Talc2, data=porData)
 FailureEffect.Male <- aov(as.numeric(failures) ~ Talc2, data=porData.Male)
@@ -185,7 +193,7 @@ summary.lm(FailureEffect.Total)
 summary.lm(FailureEffect.Male)
 summary.lm(FailureEffect.Female)
 
-##Goout vs Alcohol Consumption
+# Goout vs Alcohol Consumption
 GooutEffect.Total <- aov(as.numeric(goout) ~ Talc2, data=porData)
 GooutEffect.Male <- aov(as.numeric(goout) ~ Talc2, data=porData.Male)
 GooutEffect.Female <- aov(as.numeric(goout) ~ Talc2, data=porData.Female)
@@ -193,7 +201,7 @@ summary.lm(GooutEffect.Total)
 summary.lm(GooutEffect.Male)
 summary.lm(GooutEffect.Female)
 
-##Grade vs Alcohol Consumption
+# Grade vs Alcohol Consumption
 GradeEffect.Total <- aov(G3 ~ Talc2, data=porData)
 GradeEffect.Male <- aov(G3 ~ Talc2, data=porData.Male)
 GradeEffect.Female <- aov(G3 ~ Talc2, data=porData.Female)
@@ -208,5 +216,11 @@ summary.lm(GradeEffect.Male)
 summary.lm(GradeEffect.Female)
 ```
 
+```{r}
+GradeEffect2.Total <- aov(G3 ~ goout + Talc2, data=porData.Male)
+Anova(GradeEffect2.Total, type="III")
+```
+
+To Do: Add discussion
 
 For may of these variables, there is a statically significant effect found when all data is used, but many of these effects disappear when data is separated by sex. This could be that the statistical significance is only due to the higher number of datapoints, but that there isn't practical significance. Conversely, for going out and alcohol consumption there is a statiscially significant results when split by sex which suggests that the correlation is stronger.
