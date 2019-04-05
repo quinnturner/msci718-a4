@@ -138,8 +138,37 @@ ggplot(porData, aes(y=Talc, x=sex)) + geom_point() + geom_jitter(width=0.25)
 ```
 From this we can see that overall women drink less than men, and there are especially more men who drink higher levels of alcohol. This may mean that we want to separate by sex when looking at alcohol effects.
 
-## Analysis
+# Analysis: Contrasts, Effect Size and Anova
+The four variables we deemed interesting to assess against alcohol consumption were 
+1. Health
+2. Past Class Failures
+3. Frequency of Going Out
+4. Final Grade in Class
+
+We have broken down the analysis in three parts:
+  
+1. Contrasts 
+we wish to explore how each of the four variables differ against heavy vs. moderate drinkers vs. non-drinkers. The data is segmented in two different ways to ensure that statistical significance is not only due to a high number of data points in the whole dataset. 
+* Gender (Male, Female)
+* Alcohol Consumption (None, Low Alcohol, High Alcohol)
+
+2. Effect Size
+
+3. Anova
+
+For may of these variables, there is a statically significant effect found when all data is used, but many of these effects disappear when data is separated by sex. This could be that the statistical significance is only due to the higher number of datapoints, but that there isn't practical significance. Conversely, for going out and alcohol consumption there is a statiscially significant results when split by sex which suggests that the correlation is stronger.
+
 ```{r}
+## Failures vs Alcohol Consumption
+FailureEffect.Total <- aov(as.numeric(failures) ~ Talc2, data=porData)
+FailureEffect.Male <- aov(as.numeric(failures) ~ Talc2, data=porData.Male)
+FailureEffect.Female <- aov(as.numeric(failures) ~ Talc2, data=porData.Female)
+summary.lm(FailureEffect.Total)
+summary.lm(FailureEffect.Male)
+summary.lm(FailureEffect.Female)
+```
+
+```{r include = FALSE}
 #Contrasts
 contrast1 <- c(-2, 1, 1)
 contrast2 <- c(0, -1, 1)
@@ -158,14 +187,6 @@ HealthEffect.Female <- aov(as.numeric(health) ~ Talc2, data=porData.Female)
 summary.lm(HealthEffect.Total)
 summary.lm(HealthEffect.Male)
 summary.lm(HealthEffect.Female)
-
-## Failures vs Alcohol Consumption
-FailureEffect.Total <- aov(as.numeric(failures) ~ Talc2, data=porData)
-FailureEffect.Male <- aov(as.numeric(failures) ~ Talc2, data=porData.Male)
-FailureEffect.Female <- aov(as.numeric(failures) ~ Talc2, data=porData.Female)
-summary.lm(FailureEffect.Total)
-summary.lm(FailureEffect.Male)
-summary.lm(FailureEffect.Female)
 
 ##Goout vs Alcohol Consumption
 GooutEffect.Total <- aov(as.numeric(goout) ~ Talc2, data=porData)
@@ -193,22 +214,6 @@ summary.lm(GradeEffect.Male)
 summary.lm(GradeEffect.Female)
 ```
 
-To Do: Add discussion
-
-For may of these variables, there is a statically significant effect found when all data is used, but many of these effects disappear when data is separated by sex. This could be that the statistical significance is only due to the higher number of datapoints, but that there isn't practical significance. Conversely, for going out and alcohol consumption there is a statiscially significant results when split by sex which suggests that the correlation is stronger.
-```
-
-```{r}
-ggplot(porData, aes(x=Walc, y=Gavg, group=Walc))+
-  geom_boxplot()+
-  theme(legend.position="none")+
-  xlab("Daily alcohol consumption on weekends")+
-  ylab("Average Grades")+
-  ggtitle("Average Grade")
-
-```
-
-More visual analysis
 ```{r}
 ggplot(porData, aes(Walc))+
   geom_bar(aes(fill = health), position = position_stack(reverse = TRUE))+
