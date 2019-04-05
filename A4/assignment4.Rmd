@@ -37,7 +37,7 @@ This analysis will use two datasets, one set includes information on students ta
 
 # Objectives
 
-Our objective for this analysis was to analyze the correlation between alcohol consumption, and other characteristics among Portuguese post-secondary school students. 
+Our objective for this analysis was to analyze the correlation between alcohol consumption, and other characteristics among Portuguese post-secondary school students.
 
 # Hypothesis
 From the set of variables collected in this dataset, our hypothesis is that there is correlation between alcohol consumption and each of the following variables: health, goout, failures, grades (G3). Each of these hypothesis come from personal experience and/or curiosity.
@@ -111,7 +111,7 @@ porData$health <- factor(porData$health, levels = c("1","2","3","4","5"),
                     labels = c("Very Bad","Bad","Okay","Good","Very Good"))
 
 porData$Talc2 <- sapply(porData$Talc, function(x) if(x <= 2) 'No' else if(x<=6) 'Low' else 'High')
-porData$Talc2 <- factor(porData$Talc2, levels = c("No", "Low", "High"), 
+porData$Talc2 <- factor(porData$Talc2, levels = c("No", "Low", "High"),
                         labels = c("None", "Low Alc", "High Alc"))
 
 ```
@@ -139,16 +139,16 @@ ggplot(porData, aes(y=Talc, x=sex)) + geom_point() + geom_jitter(width=0.25)
 From this we can see that overall women drink less than men, and there are especially more men who drink higher levels of alcohol. This may mean that we want to separate by sex when looking at alcohol effects.
 
 # Analysis: Contrasts, Effect Size and Anova
-The four variables we deemed interesting to assess against alcohol consumption were 
+The four variables we deemed interesting to assess against alcohol consumption were
 1. Health
 2. Past Class Failures
 3. Frequency of Going Out
 4. Final Grade in Class
 
 We have broken down the analysis in three parts:
-  
-1. Contrasts 
-we wish to explore how each of the four variables differ against heavy vs. moderate drinkers vs. non-drinkers. The data is segmented in two different ways to ensure that statistical significance is not only due to a high number of data points in the whole dataset. 
+
+1. Contrasts
+we wish to explore how each of the four variables differ against heavy vs. moderate drinkers vs. non-drinkers. The data is segmented in two different ways to ensure that statistical significance is not only due to a high number of data points in the whole dataset.
 * Gender (Male, Female)
 * Alcohol Consumption (None, Low Alcohol, High Alcohol)
 
@@ -204,9 +204,6 @@ summary.lm(GradeEffect.Total)
 summary.lm(GradeEffect.Male)
 summary.lm(GradeEffect.Female)
 
-GradeEffect2.Total <- aov(G3 ~ goout + Talc2, data=porData.Male)
-Anova(GradeEffect2.Total, type="III")
-
 GradeEffect.Male <- aov(G3 ~ Talc2, data=porData.Male)
 GradeEffect.Female <- aov(G3 ~ Talc2, data=porData.Female)
 summary.lm(GradeEffect.Total)
@@ -232,4 +229,3 @@ ggplot(porData, aes(Walc))+
 To Do: Discussion
 
 Maybe interesting to say that because we can only say if these are correlated but not what the causation is, there could be reason to believe that either causes either: i.e. people could get worse grades because they drink or people may drink more because they get worse grades.
-
