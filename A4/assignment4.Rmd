@@ -117,8 +117,8 @@ matData$health <- factor(matData$health, levels = c("1","2","3","4","5"),
 porData$health <- factor(porData$health, levels = c("1","2","3","4","5"),
                     labels = c("Very Bad","Bad","Okay","Good","Very Good"))
 
-matData$Talc2 <- sapply(matData$Talc, function(x) if(x <= 2) 'No' else if(x<=6) 'Low' else 'High')
-matData$Talc2 <- factor(matData$Talc2, levels = c("No", "Low", "High"), 
+porData$Talc2 <- sapply(porData$Talc, function(x) if(x <= 2) 'No' else if(x<=6) 'Low' else 'High')
+porData$Talc2 <- factor(porData$Talc2, levels = c("No", "Low", "High"), 
                         labels = c("None", "Low Alc", "High Alc"))
 
 porData$Gavg <- rowMeans(cbind(porData$G1,porData$G2,porData$G3))
@@ -145,22 +145,30 @@ porDataLen <- dim(porData)[1]
 ## Exploration
 ```{r}
 # Alcohol Consumption for males and females -> can these groups be together or should they be separated?
-
+ggplot(porData, aes(y=Talc, x=sex)) + geom_point() + geom_jitter(width=0.25)
 ```
+From this we can see that overall women drink less than men, and there are especially more men who drink higher levels of alcohol. This may mean that we want to separate by sex when looking at alcohol effects.
 
 ## Analysis
 ```{r}
 #Contrasts
 contrast1 <- c(-2, 1, 1)
 contrast2 <- c(0, -1, 1)
-contrasts(matData$Talc2) <- cbind(contrast1, contrast2)
-colnames(attr(matData$Talc2, "contrasts")) <- c("Alcohol v No Alcohol", "High v Low")
-contrasts(matData$Talc2)
+contrasts(porData$Talc2) <- cbind(contrast1, contrast2)
+colnames(attr(porData$Talc2, "contrasts")) <- c("Alcohol v No Alcohol", "High v Low")
+contrasts(porData$Talc2)
+
+##Separate by sex
+porData.Male <- subset(porData, porData$sex=="M")
+porData.Female <- subset(porData, porData$sex=="F")
 
 ## Health vs Alcohol Consumption
-HealthEffect <- aov(as.numeric(health) ~ Talc2, data=matData)
-summary.lm(HealthEffect)
-
+HealthEffect.Total <- aov(as.numeric(health) ~ Talc2, data=porData)
+HealthEffect.Male <- aov(as.numeric(health) ~ Talc2, data=porData.Male)
+HealthEffect.Female <- aov(as.numeric(health) ~ Talc2, data=porData.Female)
+summary.lm(HealthEffect.Total)
+summary.lm(HealthEffect.Male)
+summary.lm(HealthEffect.Female)
 ```
 
 ```{r}
