@@ -25,7 +25,7 @@ For our final assignment for MSCI 718, we are asked to analyze a dataset of our 
 
 We chose to analyze student alcohol consumption in secondary schools. The data includes social, gender and study data from secondary school students. The data was provided by the UC Irving Machine Learning Repository and is available on [Kaggle](https://www.kaggle.com/uciml/student-alcohol-consumption).
 
-Our objective for this analysis was to analyze the correlation between alcohol consumption, and other characteristics among Portuguese post-secondary school students. 
+Our objective for this analysis was to analyze the correlation between alcohol consumption, and other characteristics among Portuguese post-secondary school students.
 
 # Hypothesis
 From the set of variables collected in this dataset, our hypothesis is that there is correlation between alcohol consumption and each of the following variables: health, goout, failures, grades (G3). Each of these hypothesis come from personal experience and/or curiosity. As students we know that when you go out you more you tend to drink more, which can cause you to sleep less, which can impact your grades and your overall health. For this reason we felt the variables chosen had a good chance of showing some correlation with alcohol consumption.
@@ -85,7 +85,7 @@ porData$health <- factor(porData$health, levels = c("1","2","3","4","5"),
                     labels = c("Very Bad","Bad","Okay","Good","Very Good"))
 
 porData$Talc2 <- sapply(porData$Talc, function(x) if(x <= 2) 'No' else if(x<=6) 'Low' else 'High')
-porData$Talc2 <- factor(porData$Talc2, levels = c("No", "Low", "High"), 
+porData$Talc2 <- factor(porData$Talc2, levels = c("No", "Low", "High"),
                         labels = c("None", "Low Alc", "High Alc"))
 
 ```
@@ -110,7 +110,7 @@ porDataLen <- dim(porData)[1]
 # Alcohol Consumption for males and females -> can these groups be together or should they be separated?
 ggplot(porData, aes(y=Talc, x=sex)) + geom_point() + geom_jitter(width=0.25)
 
-# Lets examine two of our feature variables and analyze their correlation to alcohol consumption 
+# Lets examine two of our feature variables and analyze their correlation to alcohol consumption
 ggplot(porData, aes(Talc))+
   geom_bar(aes(fill = health), position = position_stack(reverse = TRUE))+
   xlab("Alcohol consumption")+
@@ -173,9 +173,6 @@ summary.lm(GradeEffect.Total)
 summary.lm(GradeEffect.Male)
 summary.lm(GradeEffect.Female)
 
-GradeEffect2.Total <- aov(G3 ~ goout + Talc2, data=porData.Male)
-Anova(GradeEffect2.Total, type="III")
-
 GradeEffect.Male <- aov(G3 ~ Talc2, data=porData.Male)
 GradeEffect.Female <- aov(G3 ~ Talc2, data=porData.Female)
 summary.lm(GradeEffect.Total)
@@ -190,4 +187,3 @@ For may of these variables, there is a statically significant effect found when 
 To Do: Discussion
 
 Maybe interesting to say that because we can only say if these are correlated but not what the causation is, there could be reason to believe that either causes either: i.e. people could get worse grades because they drink or people may drink more because they get worse grades.
-
