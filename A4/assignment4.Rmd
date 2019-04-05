@@ -17,8 +17,6 @@ library(ggplot2)
 library(car)
 ```
 
-
-
 # Objectives
 
 For our final assignment for MSCI 718, we are asked to analyze a dataset of our choice and generate useful insights.
@@ -40,6 +38,7 @@ Let's begin by importing the dataset, defining the variables, and exploring the 
 porData <- read.csv("student-alcohol-consumption/student-por.csv")
 ```
 
+## Raw Variables 
 There are 30+ variables in this dataset. Descriptions of a select group of variables in the dataset are shown below (provided by the original Kaggle source):
 
 * school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira)
@@ -54,13 +53,11 @@ There are 30+ variables in this dataset. Descriptions of a select group of varia
 * Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high)
 * health - current health status (numeric: from 1 - very bad to 5 - very good)
 * absences - number of school absences (numeric: from 0 to 93)
+* G1 - first period grade (numeric: from 0 to 20)
+* G2 - second period grade (numeric: from 0 to 20)
+* G3 - final grade (numeric: from 0 to 20, output target)
 
-These grades are related with the course subject, Math or Portuguese:
-
-- G1 - first period grade (numeric: from 0 to 20)
-- G2 - second period grade (numeric: from 0 to 20)
-- G3 - final grade (numeric: from 0 to 20, output target)
-
+## Transformed Variables
 Based on the description of the variables, we deemed that it was appropriate to make the following transformations to the imported dataset:
 
 * Add variable `Talc` _<2 - very low to 10 - very high> (Sum of students' drinking habits)_
@@ -90,20 +87,7 @@ porData$Talc2 <- factor(porData$Talc2, levels = c("No", "Low", "High"),
 
 Additional note: there are 382 students that belong to both datasets so there are only 13 students who took math did not take Portugese. It is not likely or appropriate that we can find statistically or practically significant differences between the students who took math and not Portugese or vice-versa. This is because we don't know whether the remaining Portugese students took math or not since they could have been in another class that was not included in the data collection process. Since most students who took math also took Portugese but not vice versa, we will use the Portugese data whenever analyzing traights unrelated to the course type.
 
-Here, we get a glimpse of the dataset with the appropriate factors and derived variables.
-
-```{r}
-head(porData)
-```
-
-## Set up
-
-```{r}
-# Length of each dataframe
-porDataLen <- dim(porData)[1]
-```
-
-## Visual Exploration
+## Discovery
 ```{r}
 # Alcohol Consumption for males and females -> can these groups be together or should they be separated?
 ggplot(porData, aes(y=Talc, x=sex)) + geom_point() + geom_jitter(width=0.25)
@@ -122,6 +106,7 @@ ggplot(porData, aes(Talc))+
   ggtitle("Alcohol consumption seems to be correlated with going out")
 
 ```
+
 From this we can see that overall women drink less than men, and there are especially more men who drink higher levels of alcohol. This may mean that we want to separate by sex when looking at alcohol effects. We also see that our initial assumptions about which feature variables to examine could be vindicated, based on the fact that both going out and general health seem to have some correlation with alcohol consumption - at least upon visual inspection.
 
 Now that we've set up our data, and have some confidence going forward that  our initially chosen hypothesis variables could show some correlation to alcohol consumption, let's move forward with our analysis.
@@ -229,7 +214,7 @@ highMale <- subset(porData, porData$sex=="M" & Talc2 == "High Alc")
 highFemale <- subset(porData, porData$sex == "F" & Talc2 == "High Alc")
 ```
 
-## Cohen's d for Grades between Female and Male Heavy Drinkers
+## Cohen's d for Grades between Male Drinkers
 We wish to obtain a comparison of two means of the results we obtained through the contrasts. It was gathered that there is a significant difference in male moderate drinkers vs. male heavy drinkers. Through finding the cohen's d value, we have obtained results for a SMALL effect size.
 
 ```{r}
@@ -242,6 +227,6 @@ GradeEffect2.Total <- aov(G3 ~ goout + Talc2, data=porData.Male)
 Anova(GradeEffect2.Total, type="III")
 ```
 
-To Do: Add discussion
+# Conclusion
 
 For may of these variables, there is a statically significant effect found when all data is used, but many of these effects disappear when data is separated by sex. This could be that the statistical significance is only due to the higher number of datapoints, but that there isn't practical significance. Conversely, for going out and alcohol consumption there is a statiscially significant results when split by sex which suggests that the correlation is stronger.
